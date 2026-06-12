@@ -9,3 +9,5 @@ __pycache__/
 *.log
 *.env
 map_cache/
+postgres-data/
+redis-data/
