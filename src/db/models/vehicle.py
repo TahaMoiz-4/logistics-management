@@ -15,10 +15,11 @@ from src.core.enums import VehicleType, FuelType
 class Vehicle(Base):
     __tablename__ = "vehicles"
  
-    id              = Column(UUID(as_uuid=False), primary_key=True, default=gen_uuid)
-    company_id      = Column(UUID(as_uuid=False), ForeignKey("companies.id"), nullable=False)
-    depot_id        = Column(UUID(as_uuid=False), ForeignKey("depots.id"), nullable=False)
-    cost_profile_id = Column(UUID(as_uuid=False), ForeignKey("cost_profiles.id"))
+    id              = Column(Integer, primary_key=True, autoincrement=True)
+    company_id      = Column(Integer, ForeignKey("companies.id"), nullable=False)
+    depot_id        = Column(Integer, ForeignKey("depots.id"), nullable=False)
+    permanent_depot_id = Column(Integer, ForeignKey("depots.id"), nullable=True)
+    cost_profile_id = Column(Integer, ForeignKey("cost_profiles.id"))
     license_plate   = Column(String(32), nullable=False)
     type            = Column(Enum(VehicleType), nullable=False)
     max_weight_kg   = Column(Numeric(10, 2), nullable=False)

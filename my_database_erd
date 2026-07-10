@@ -1,0 +1,500 @@
+// Interactive Data Models
+digraph {
+	graph [bgcolor="#EEEEEE" rankdir=TB splines=spline]
+	node [fontname=Roboto fontsize=12 shape=none]
+	edge [fontname=Roboto fontsize=10]
+	Company [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">Company</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID (PK)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">name</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">contact_email</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">timezone</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(64) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_at</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR></TABLE>> URL="http://Company_details.html"]
+	Company -> Depot [label=depots color="#1E88E5" style=dashed tooltip="Relation between Company and Depot"]
+	Company -> Vehicle [label=vehicles color="#1E88E5" style=dashed tooltip="Relation between Company and Vehicle"]
+	Company -> Driver [label=drivers color="#1E88E5" style=dashed tooltip="Relation between Company and Driver"]
+	Company -> Customer [label=customers color="#1E88E5" style=dashed tooltip="Relation between Company and Customer"]
+	Company -> CostProfile [label=cost_profiles color="#1E88E5" style=dashed tooltip="Relation between Company and CostProfile"]
+	Company -> Order [label=orders color="#1E88E5" style=dashed tooltip="Relation between Company and Order"]
+	Company -> RoutePlan [label=route_plans color="#1E88E5" style=dashed tooltip="Relation between Company and RoutePlan"]
+	Customer [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">Customer</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID (PK)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">company_id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">name</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">email</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">phone</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(32) ()</TD>
+                         </TR></TABLE>> URL="http://Customer_details.html"]
+	Customer -> Company [label=company color="#1E88E5" style=dashed tooltip="Relation between Customer and Company"]
+	Customer -> Location [label=locations color="#1E88E5" style=dashed tooltip="Relation between Customer and Location"]
+	Customer -> Order [label=orders color="#1E88E5" style=dashed tooltip="Relation between Customer and Order"]
+	Depot [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">Depot</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID (PK)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">company_id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">name</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">lat</TD>
+                         <TD BGCOLOR="#BBDEFB">FLOAT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">lng</TD>
+                         <TD BGCOLOR="#BBDEFB">FLOAT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">h3_index</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(20) (Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">address</TD>
+                         <TD BGCOLOR="#BBDEFB">TEXT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">is_active</TD>
+                         <TD BGCOLOR="#BBDEFB">BOOLEAN ()</TD>
+                         </TR></TABLE>> URL="http://Depot_details.html"]
+	Depot -> Company [label=company color="#1E88E5" style=dashed tooltip="Relation between Depot and Company"]
+	Depot -> Vehicle [label=vehicles color="#1E88E5" style=dashed tooltip="Relation between Depot and Vehicle"]
+	Depot -> RoutePlan [label=plans color="#1E88E5" style=dashed tooltip="Relation between Depot and RoutePlan"]
+	Driver [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">Driver</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID (PK)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">company_id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">vehicle_id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">name</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">phone</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(32) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">license_number</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(64) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">shift_start</TD>
+                         <TD BGCOLOR="#BBDEFB">TIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">shift_end</TD>
+                         <TD BGCOLOR="#BBDEFB">TIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">max_hours_per_day</TD>
+                         <TD BGCOLOR="#BBDEFB">NUMERIC(4, 2) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">is_active</TD>
+                         <TD BGCOLOR="#BBDEFB">BOOLEAN ()</TD>
+                         </TR></TABLE>> URL="http://Driver_details.html"]
+	Driver -> Company [label=company color="#1E88E5" style=dashed tooltip="Relation between Driver and Company"]
+	Driver -> Vehicle [label=vehicle color="#1E88E5" style=dashed tooltip="Relation between Driver and Vehicle"]
+	Driver -> Route [label=routes color="#1E88E5" style=dashed tooltip="Relation between Driver and Route"]
+	Vehicle [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">Vehicle</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID (PK)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">company_id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">depot_id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">cost_profile_id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">license_plate</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(32) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">type</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(5) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">max_weight_kg</TD>
+                         <TD BGCOLOR="#BBDEFB">NUMERIC(10, 2) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">max_volume_m3</TD>
+                         <TD BGCOLOR="#BBDEFB">NUMERIC(10, 3) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">avg_speed_kmh</TD>
+                         <TD BGCOLOR="#BBDEFB">NUMERIC(6, 2) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">fuel_type</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(8) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">is_active</TD>
+                         <TD BGCOLOR="#BBDEFB">BOOLEAN ()</TD>
+                         </TR></TABLE>> URL="http://Vehicle_details.html"]
+	Vehicle -> Company [label=company color="#1E88E5" style=dashed tooltip="Relation between Vehicle and Company"]
+	Vehicle -> Depot [label=depot color="#1E88E5" style=dashed tooltip="Relation between Vehicle and Depot"]
+	Vehicle -> CostProfile [label=cost_profile color="#1E88E5" style=dashed tooltip="Relation between Vehicle and CostProfile"]
+	Vehicle -> Driver [label=driver color="#1E88E5" style=dashed tooltip="Relation between Vehicle and Driver"]
+	Vehicle -> Route [label=routes color="#1E88E5" style=dashed tooltip="Relation between Vehicle and Route"]
+	Vehicle -> VehiclePositionEvent [label=positions color="#1E88E5" style=dashed tooltip="Relation between Vehicle and VehiclePositionEvent"]
+	Route [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">Route</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID (PK)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">plan_id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">vehicle_id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">driver_id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">status</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(9) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">total_distance_m</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">total_time_sec</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">total_weight_kg</TD>
+                         <TD BGCOLOR="#BBDEFB">NUMERIC(10, 3) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">estimated_cost</TD>
+                         <TD BGCOLOR="#BBDEFB">NUMERIC(12, 4) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">departure_time</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">geometry</TD>
+                         <TD BGCOLOR="#BBDEFB">JSON ()</TD>
+                         </TR></TABLE>> URL="http://Route_details.html"]
+	Route -> RoutePlan [label=plan color="#1E88E5" style=dashed tooltip="Relation between Route and RoutePlan"]
+	Route -> Vehicle [label=vehicle color="#1E88E5" style=dashed tooltip="Relation between Route and Vehicle"]
+	Route -> Driver [label=driver color="#1E88E5" style=dashed tooltip="Relation between Route and Driver"]
+	Route -> RouteStop [label=stops color="#1E88E5" style=dashed tooltip="Relation between Route and RouteStop"]
+	Route -> VehiclePositionEvent [label=positions color="#1E88E5" style=dashed tooltip="Relation between Route and VehiclePositionEvent"]
+	DeliveryWindow [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">DeliveryWindow</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID (PK)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">order_id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID (Unique)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">earliest</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">latest</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">penalty_per_min</TD>
+                         <TD BGCOLOR="#BBDEFB">NUMERIC(10, 4) ()</TD>
+                         </TR></TABLE>> URL="http://DeliveryWindow_details.html"]
+	DeliveryWindow -> Order [label=order color="#1E88E5" style=dashed tooltip="Relation between DeliveryWindow and Order"]
+	CostProfile [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">CostProfile</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID (PK)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">company_id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">name</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">fuel_cost_per_km</TD>
+                         <TD BGCOLOR="#BBDEFB">NUMERIC(10, 4) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">driver_hourly</TD>
+                         <TD BGCOLOR="#BBDEFB">NUMERIC(10, 4) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">cost_per_kg</TD>
+                         <TD BGCOLOR="#BBDEFB">NUMERIC(10, 4) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">currency</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(8) ()</TD>
+                         </TR></TABLE>> URL="http://CostProfile_details.html"]
+	CostProfile -> Company [label=company color="#1E88E5" style=dashed tooltip="Relation between CostProfile and Company"]
+	CostProfile -> Vehicle [label=vehicles color="#1E88E5" style=dashed tooltip="Relation between CostProfile and Vehicle"]
+	Order [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">Order</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID (PK)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">company_id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">customer_id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">pickup_location_id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">dropoff_location_id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">weight_kg</TD>
+                         <TD BGCOLOR="#BBDEFB">NUMERIC(10, 3) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">volume_m3</TD>
+                         <TD BGCOLOR="#BBDEFB">NUMERIC(10, 4) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">priority</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(6) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">status</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(10) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">notes</TD>
+                         <TD BGCOLOR="#BBDEFB">TEXT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_at</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR></TABLE>> URL="http://Order_details.html"]
+	Order -> Company [label=company color="#1E88E5" style=dashed tooltip="Relation between Order and Company"]
+	Order -> Customer [label=customer color="#1E88E5" style=dashed tooltip="Relation between Order and Customer"]
+	Order -> Location [label=pickup_location color="#1E88E5" style=dashed tooltip="Relation between Order and Location"]
+	Order -> Location [label=dropoff_location color="#1E88E5" style=dashed tooltip="Relation between Order and Location"]
+	Order -> DeliveryWindow [label=delivery_window color="#1E88E5" style=dashed tooltip="Relation between Order and DeliveryWindow"]
+	Order -> RouteStop [label=route_stops color="#1E88E5" style=dashed tooltip="Relation between Order and RouteStop"]
+	RoutePlan [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">RoutePlan</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID (PK)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">company_id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">depot_id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">name</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(255) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">planned_date</TD>
+                         <TD BGCOLOR="#BBDEFB">DATE ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">status</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(10) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">optimization_params</TD>
+                         <TD BGCOLOR="#BBDEFB">JSON ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">total_orders</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">total_routes</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">created_at</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">optimized_at</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR></TABLE>> URL="http://RoutePlan_details.html"]
+	RoutePlan -> Company [label=company color="#1E88E5" style=dashed tooltip="Relation between RoutePlan and Company"]
+	RoutePlan -> Depot [label=depot color="#1E88E5" style=dashed tooltip="Relation between RoutePlan and Depot"]
+	RoutePlan -> Route [label=routes color="#1E88E5" style=dashed tooltip="Relation between RoutePlan and Route"]
+	RouteStop [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">RouteStop</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID (PK)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">route_id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">order_id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">location_id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">stop_sequence</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">stop_type</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(11) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">eta</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">eta_window_start</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">eta_window_end</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">distance_from_prev_m</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">time_from_prev_sec</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">arrived_at</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">departed_at</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR></TABLE>> URL="http://RouteStop_details.html"]
+	RouteStop -> Route [label=route color="#1E88E5" style=dashed tooltip="Relation between RouteStop and Route"]
+	RouteStop -> Order [label=order color="#1E88E5" style=dashed tooltip="Relation between RouteStop and Order"]
+	RouteStop -> Location [label=location color="#1E88E5" style=dashed tooltip="Relation between RouteStop and Location"]
+	TrafficProfile [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">TrafficProfile</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID (PK)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">h3_index</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(20) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">day_type</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(14) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">hour_start</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">hour_end</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">multiplier</TD>
+                         <TD BGCOLOR="#BBDEFB">NUMERIC(5, 3) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">road_type</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(64) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">source</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(9) ()</TD>
+                         </TR></TABLE>> URL="http://TrafficProfile_details.html"]
+	TrafficProfile -> Zone [label=zone color="#1E88E5" style=dashed tooltip="Relation between TrafficProfile and Zone"]
+	VehiclePositionEvent [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">VehiclePositionEvent</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID (PK)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">vehicle_id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">route_id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">recorded_at</TD>
+                         <TD BGCOLOR="#BBDEFB">DATETIME ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">lat</TD>
+                         <TD BGCOLOR="#BBDEFB">FLOAT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">lng</TD>
+                         <TD BGCOLOR="#BBDEFB">FLOAT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">h3_index</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(20) (Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">speed_kmh</TD>
+                         <TD BGCOLOR="#BBDEFB">NUMERIC(6, 2) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">source</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(9) ()</TD>
+                         </TR></TABLE>> URL="http://VehiclePositionEvent_details.html"]
+	VehiclePositionEvent -> Vehicle [label=vehicle color="#1E88E5" style=dashed tooltip="Relation between VehiclePositionEvent and Vehicle"]
+	VehiclePositionEvent -> Route [label=route color="#1E88E5" style=dashed tooltip="Relation between VehiclePositionEvent and Route"]
+	Location [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">Location</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID (PK)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">customer_id</TD>
+                         <TD BGCOLOR="#BBDEFB">UUID ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">label</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(128) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">lat</TD>
+                         <TD BGCOLOR="#BBDEFB">FLOAT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">lng</TD>
+                         <TD BGCOLOR="#BBDEFB">FLOAT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">h3_index</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(20) (Index)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">address_text</TD>
+                         <TD BGCOLOR="#BBDEFB">TEXT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">city</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(128) ()</TD>
+                         </TR></TABLE>> URL="http://Location_details.html"]
+	Location -> Customer [label=customer color="#1E88E5" style=dashed tooltip="Relation between Location and Customer"]
+	Location -> Order [label=pickup_orders color="#1E88E5" style=dashed tooltip="Relation between Location and Order"]
+	Location -> Order [label=dropoff_orders color="#1E88E5" style=dashed tooltip="Relation between Location and Order"]
+	Location -> RouteStop [label=route_stops color="#1E88E5" style=dashed tooltip="Relation between Location and RouteStop"]
+	Zone [label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD COLSPAN="2" BGCOLOR="#3F51B5"><FONT COLOR="white">Zone</FONT></TD></TR>
+        <TR>
+                         <TD BGCOLOR="#BBDEFB">h3_index</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(20) (PK)</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">resolution</TD>
+                         <TD BGCOLOR="#BBDEFB">INTEGER ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">center_lat</TD>
+                         <TD BGCOLOR="#BBDEFB">FLOAT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">center_lng</TD>
+                         <TD BGCOLOR="#BBDEFB">FLOAT ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">city</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(128) ()</TD>
+                         </TR><TR>
+                         <TD BGCOLOR="#BBDEFB">label</TD>
+                         <TD BGCOLOR="#BBDEFB">VARCHAR(128) ()</TD>
+                         </TR></TABLE>> URL="http://Zone_details.html"]
+	Zone -> TrafficProfile [label=traffic_profiles color="#1E88E5" style=dashed tooltip="Relation between Zone and TrafficProfile"]
+}
