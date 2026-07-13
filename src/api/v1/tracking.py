@@ -50,7 +50,15 @@ def live_tracking(current: CurrentUser = Depends(get_current_user), db: Session 
         """(seconds_ago, is_stale, keep)."""
         if recorded_at is None:
             return None, True, True
+        # A client may send a naive timestamp (no offset); treat it as UTC so the
+        # subtraction is valid rather than raising on naive-vs-aware.
+        if recorded_at.tzinfo is None:
+            recorded_at = recorded_at.replace(tzinfo=timezone.utc)
         secs = int((now - recorded_at).total_seconds())
+        # Guard against a client clock slightly ahead of the server: never report
+        # a negative "seconds ago" (would surface as e.g. "-17937s ago").
+        if secs < 0:
+            secs = 0
         return secs, (secs > stale_after), (secs <= drop_after_sec)
 
     positions: list[LivePosition] = []
