@@ -77,7 +77,7 @@ export function PlanLivePage() {
             <ObjectiveChart
               best={solver.bestTrace}
               current={solver.currentTrace}
-              variant="dark"
+              variant="light"
               height={210}
             />
           ) : (

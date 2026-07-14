@@ -32,12 +32,15 @@ export function ObjectiveChart({
     [best, current, width, height, maxPoints],
   );
 
-  const ink = variant === "dark" ? "#ffffff" : "#161616";
+  // The best-so-far line — a clear mid-grey with a gradient area beneath it.
+  const line = variant === "dark" ? "#e8e8e4" : "#3f3f3c";
   const grid = variant === "dark" ? "rgba(255,255,255,.10)" : "#ededea";
   const gridText = variant === "dark" ? "#8a8a85" : "#a0a09a";
   // Keep the noisy "current" trace faint so it never competes with the best line.
-  const curStroke = variant === "dark" ? "rgba(245,245,242,.18)" : "#dcdcd6";
-  const areaFill = variant === "dark" ? "rgba(255,255,255,.10)" : "rgba(22,22,22,.05)";
+  const curStroke = variant === "dark" ? "rgba(245,245,242,.16)" : "#d2d2cc";
+  const headStroke = variant === "dark" ? "#161616" : "#fff";
+  const gradTop = variant === "dark" ? "rgba(232,232,228,.28)" : "rgba(63,63,60,.22)";
+  const gradId = `ng-area-${variant}`;
 
   if (best.length === 0) {
     return null;
@@ -45,6 +48,13 @@ export function ObjectiveChart({
 
   return (
     <svg viewBox={`0 0 ${width} ${height}`} width="100%" style={{ display: "block" }}>
+      <defs>
+        <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={gradTop} />
+          <stop offset="100%" stopColor={gradTop} stopOpacity={0} />
+        </linearGradient>
+      </defs>
+
       {gridLines.map((gy, i) => (
         <g key={i}>
           <line x1={46} y1={gy} x2={width - 16} y2={gy} stroke={grid} strokeWidth={1} />
@@ -61,21 +71,26 @@ export function ObjectiveChart({
         </g>
       ))}
 
-      {curPts && (
-        <polyline points={curPts} fill="none" stroke={curStroke} strokeWidth={1} />
-      )}
+      {curPts && <polyline points={curPts} fill="none" stroke={curStroke} strokeWidth={1} />}
 
-      {bestPts.area && <polygon points={bestPts.area} fill={areaFill} />}
+      {bestPts.area && <polygon points={bestPts.area} fill={`url(#${gradId})`} />}
       <polyline
         points={bestPts.line}
         fill="none"
-        stroke={ink}
-        strokeWidth={3.2}
+        stroke={line}
+        strokeWidth={3}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       {bestPts.head && (
-        <circle cx={bestPts.head[0]} cy={bestPts.head[1]} r={5} fill={ink} stroke={variant === "dark" ? "#161616" : "#fff"} strokeWidth={2.5} />
+        <circle
+          cx={bestPts.head[0]}
+          cy={bestPts.head[1]}
+          r={5}
+          fill={line}
+          stroke={headStroke}
+          strokeWidth={2.5}
+        />
       )}
     </svg>
   );
