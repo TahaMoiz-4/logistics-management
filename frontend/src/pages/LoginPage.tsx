@@ -45,7 +45,7 @@ export function LoginPage() {
       <div style={leftStyle}>
         <div style={{ display: "flex", alignItems: "center", gap: 11, marginBottom: 56 }}>
           <div style={logoMark}>N</div>
-          <div style={{ fontWeight: 700, fontSize: 17, letterSpacing: "-.02em" }}>Nightingale</div>
+          <div style={{ fontWeight: 700, fontSize: 19, letterSpacing: "-.02em" }}>Nightingale</div>
         </div>
 
         <div style={eyebrow}>Dispatch Console</div>
@@ -208,24 +208,24 @@ const logoMark: CSSProperties = {
   alignItems: "center",
   justifyContent: "center",
   fontWeight: 700,
-  fontSize: 18,
+  fontSize: 20,
 };
 const eyebrow: CSSProperties = {
   fontFamily: font.mono,
-  fontSize: 12,
+  fontSize: 14,
   letterSpacing: ".1em",
   color: colors.textFaint,
   textTransform: "uppercase",
 };
 const headline: CSSProperties = {
-  fontSize: 46,
+  fontSize: 49,
   fontWeight: 700,
   letterSpacing: "-.035em",
   lineHeight: 1.02,
   margin: "14px 0 0",
 };
 const subcopy: CSSProperties = {
-  fontSize: 15,
+  fontSize: 17,
   color: colors.textMuted,
   margin: "18px 0 40px",
   maxWidth: 380,
@@ -233,7 +233,7 @@ const subcopy: CSSProperties = {
 };
 const fieldLabel: CSSProperties = {
   display: "block",
-  fontSize: 12,
+  fontSize: 14,
   fontWeight: 600,
   color: colors.textMuted,
   marginBottom: 7,
@@ -245,12 +245,12 @@ const inputStyle: CSSProperties = {
   borderRadius: radius.lg,
   background: colors.surface,
   padding: "0 16px",
-  fontSize: 15,
+  fontSize: 17,
   outline: "none",
   transition: "border-color .18s",
 };
 const errorBox: CSSProperties = {
-  fontSize: 13,
+  fontSize: 15,
   color: "#b42318",
   background: "#fef3f2",
   border: "1px solid #fecdca",
@@ -264,7 +264,7 @@ function buttonStyle(disabled: boolean): CSSProperties {
     borderRadius: radius.lg,
     background: colors.ink,
     color: colors.inkOnDark,
-    fontSize: 15,
+    fontSize: 17,
     fontWeight: 700,
     cursor: disabled ? "default" : "pointer",
     opacity: disabled ? 0.8 : 1,
@@ -277,7 +277,7 @@ function buttonStyle(disabled: boolean): CSSProperties {
 }
 const demoHint: CSSProperties = {
   fontFamily: font.mono,
-  fontSize: 11,
+  fontSize: 12,
   color: colors.textFainter,
   textAlign: "center",
   marginTop: 4,

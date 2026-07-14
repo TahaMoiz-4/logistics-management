@@ -178,15 +178,15 @@ export function PlanDetailPage() {
       {/* unserved alert */}
       {unserved.data && unserved.data.length > 0 && (
         <div style={unservedCard}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, fontWeight: 700, fontSize: 14 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, fontWeight: 700, fontSize: 16 }}>
             Unserved orders · {unserved.data.length}
           </div>
-          <div style={{ fontSize: 12, color: colors.textMuted, marginTop: 4, marginBottom: 14 }}>
+          <div style={{ fontSize: 14, color: colors.textMuted, marginTop: 4, marginBottom: 14 }}>
             The solver could not place these. Resolve before dispatch.
           </div>
           {unserved.data.map((u) => (
             <div key={u.order_id} style={unservedRow}>
-              <span style={{ fontFamily: font.mono, fontSize: 12, fontWeight: 700 }}>ORD-{u.order_id}</span>
+              <span style={{ fontFamily: font.mono, fontSize: 14, fontWeight: 700 }}>ORD-{u.order_id}</span>
               <span style={reasonChip}>{u.reason.replace(/_/g, " ")}</span>
             </div>
           ))}
@@ -196,19 +196,19 @@ export function PlanDetailPage() {
       {/* tables */}
       <div style={tableGrid}>
         <div style={tableCard}>
-          <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 16 }}>Driver routes</div>
+          <div style={{ fontWeight: 700, fontSize: 17, marginBottom: 16 }}>Driver routes</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {mapData.data?.driver_routes.map((r) => (
               <div key={r.driver_route_id} style={driverBox}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <span style={{ fontWeight: 600, fontSize: 13 }}>
+                  <span style={{ fontWeight: 600, fontSize: 15 }}>
                     {r.driver_name ?? r.vehicle_plate ?? `Route ${r.driver_route_id}`}
                   </span>
-                  <span style={{ fontFamily: font.mono, fontSize: 11, color: colors.textMuted }}>
+                  <span style={{ fontFamily: font.mono, fontSize: 12, color: colors.textMuted }}>
                     {fmtKm(r.total_distance_m)} · {fmtMin(r.total_time_sec)}
                   </span>
                 </div>
-                <div style={{ fontFamily: font.mono, fontSize: 11, color: "#9a9a95", marginTop: 8 }}>
+                <div style={{ fontFamily: font.mono, fontSize: 12, color: "#9a9a95", marginTop: 8 }}>
                   {r.vehicle_plate ?? "—"} · {r.points.filter((p) => p.stop_type !== "depot_start" && p.stop_type !== "depot_end").length} stops
                 </div>
               </div>
@@ -217,10 +217,10 @@ export function PlanDetailPage() {
         </div>
 
         <div style={tableCard}>
-          <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 16 }}>Nurse assignments</div>
+          <div style={{ fontWeight: 700, fontSize: 17, marginBottom: 16 }}>Nurse assignments</div>
           <div style={{ display: "flex", flexDirection: "column" }}>
             {workerAssignments.data?.length === 0 && (
-              <div style={{ fontSize: 13, color: colors.textFaint }}>No assignments.</div>
+              <div style={{ fontSize: 15, color: colors.textFaint }}>No assignments.</div>
             )}
             {workerAssignments.data?.map((w) => (
               <WorkerRow key={w.id} w={w} />
@@ -267,14 +267,14 @@ function LegendRow({
     <div onClick={onClick} style={legendRow(active)}>
       <span style={{ width: 14, height: 14, borderRadius: 4, background: color, flexShrink: 0 }} />
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontWeight: 600, fontSize: 13 }}>
+        <div style={{ fontWeight: 600, fontSize: 15 }}>
           {route.driver_name ?? route.vehicle_plate ?? `Route ${route.driver_route_id}`}
         </div>
-        <div style={{ fontFamily: font.mono, fontSize: 11, color: "#9a9a95" }}>
+        <div style={{ fontFamily: font.mono, fontSize: 12, color: "#9a9a95" }}>
           {route.vehicle_plate ?? "—"} · {stops} stops
         </div>
       </div>
-      <div style={{ textAlign: "right", fontFamily: font.mono, fontSize: 11, color: colors.textMuted }}>
+      <div style={{ textAlign: "right", fontFamily: font.mono, fontSize: 12, color: colors.textMuted }}>
         <div>{fmtKm(route.total_distance_m)}</div>
         <div>{fmtMin(route.total_time_sec)}</div>
       </div>
@@ -286,13 +286,17 @@ function WorkerRow({ w }: { w: WorkerAssignment }) {
   const seq = w.stops.map((s) => `ORD-${s.order_id}`).join(" → ");
   return (
     <div style={workerRow}>
-      <span style={workerBadge}>{w.stops.length}</span>
-      <span style={{ fontWeight: 500, fontSize: 13, flex: 1 }}>
-        {w.worker_type === "nurse" ? "Nurse" : "Tech"} #{w.worker_id}
-      </span>
-      <span style={{ fontFamily: font.mono, fontSize: 11, color: "#9a9a95", maxWidth: 180, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-        {seq}
-      </span>
+      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <span style={workerBadge}>{w.stops.length}</span>
+        <span style={{ fontWeight: 600, fontSize: 15 }}>
+          {w.worker_name ?? `${w.worker_type === "nurse" ? "Nurse" : "Tech"} #${w.worker_id}`}
+        </span>
+        <span style={{ fontFamily: font.mono, fontSize: 12, color: colors.textFaint, marginLeft: "auto" }}>
+          {w.stops.length} {w.stops.length === 1 ? "stop" : "stops"}
+        </span>
+      </div>
+      {/* full visit order on its own line so it never truncates */}
+      <div style={workerSeq}>{seq}</div>
     </div>
   );
 }
@@ -329,12 +333,12 @@ const banner: CSSProperties = {
 };
 const metricLabel: CSSProperties = {
   fontFamily: font.mono,
-  fontSize: 10,
+  fontSize: 11,
   letterSpacing: ".06em",
   textTransform: "uppercase",
   color: "#a0a09a",
 };
-const metricValue: CSSProperties = { fontFamily: font.mono, fontSize: 24, fontWeight: 700, marginTop: 4 };
+const metricValue: CSSProperties = { fontFamily: font.mono, fontSize: 26, fontWeight: 700, marginTop: 4 };
 function approveBtn(enabled: boolean): CSSProperties {
   return {
     height: 50,
@@ -343,7 +347,7 @@ function approveBtn(enabled: boolean): CSSProperties {
     borderRadius: radius.lg,
     background: colors.accent,
     color: "#fff",
-    fontSize: 15,
+    fontSize: 17,
     fontWeight: 700,
     cursor: enabled ? "pointer" : "default",
     opacity: enabled ? 1 : 0.5,
@@ -362,7 +366,7 @@ const dispatchedTag: CSSProperties = {
   borderRadius: radius.lg,
   background: colors.ink,
   color: colors.inkOnDark,
-  fontSize: 14,
+  fontSize: 16,
   fontWeight: 700,
 };
 const mapGrid: CSSProperties = { display: "grid", gridTemplateColumns: "1fr 300px", gap: 20 };
@@ -376,7 +380,7 @@ const mapCard: CSSProperties = {
 const mapLoading: CSSProperties = { height: "100%", display: "flex", alignItems: "center", justifyContent: "center" };
 const legendEyebrow: CSSProperties = {
   fontFamily: font.mono,
-  fontSize: 10,
+  fontSize: 11,
   letterSpacing: ".06em",
   textTransform: "uppercase",
   color: "#a0a09a",
@@ -402,7 +406,7 @@ const mapKey: CSSProperties = {
   padding: 14,
   background: colors.surfaceMuted,
   borderRadius: radius.md,
-  fontSize: 12,
+  fontSize: 14,
   color: colors.textMuted,
 };
 const keyRow: CSSProperties = { display: "flex", alignItems: "center", gap: 10 };
@@ -422,7 +426,7 @@ const unservedRow: CSSProperties = {
 const reasonChip: CSSProperties = {
   marginLeft: "auto",
   fontFamily: font.mono,
-  fontSize: 11,
+  fontSize: 12,
   padding: "3px 9px",
   border: `1px solid ${colors.ink}`,
   borderRadius: 7,
@@ -438,10 +442,18 @@ const tableCard: CSSProperties = {
 const driverBox: CSSProperties = { padding: 14, background: colors.surfaceMuted, borderRadius: radius.md };
 const workerRow: CSSProperties = {
   display: "flex",
-  alignItems: "center",
-  gap: 12,
-  padding: "12px 0",
+  flexDirection: "column",
+  gap: 8,
+  padding: "14px 0",
   borderTop: `1px solid ${colors.track}`,
+};
+const workerSeq: CSSProperties = {
+  fontFamily: font.mono,
+  fontSize: 12,
+  color: colors.textMuted,
+  lineHeight: 1.7,
+  paddingLeft: 42, // align under the name (badge width + gap)
+  wordBreak: "break-word",
 };
 const workerBadge: CSSProperties = {
   width: 30,
@@ -451,7 +463,8 @@ const workerBadge: CSSProperties = {
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  fontSize: 11,
+  fontSize: 12,
   fontWeight: 700,
   color: "#4a4a46",
+  flexShrink: 0,
 };

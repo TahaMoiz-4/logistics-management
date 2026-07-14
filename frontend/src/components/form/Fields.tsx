@@ -70,7 +70,7 @@ export function SkillChips({
     onChange(value.includes(skill) ? value.filter((s) => s !== skill) : [...value, skill]);
   };
   if (options.length === 0) {
-    return <div style={{ fontSize: 12, color: colors.textFaint }}>No skills configured.</div>;
+    return <div style={{ fontSize: 14, color: colors.textFaint }}>No skills configured.</div>;
   }
   return (
     <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
@@ -82,7 +82,7 @@ export function SkillChips({
             key={skill}
             onClick={() => toggle(skill)}
             style={{
-              fontSize: 12,
+              fontSize: 14,
               padding: "6px 12px",
               borderRadius: 9,
               cursor: "pointer",
@@ -103,14 +103,14 @@ export function SkillChips({
 
 const labelStyle: CSSProperties = {
   display: "block",
-  fontSize: 12,
+  fontSize: 14,
   fontWeight: 600,
   color: colors.textMuted,
   marginBottom: 7,
 };
 const hintStyle: CSSProperties = {
   display: "block",
-  fontSize: 11,
+  fontSize: 12,
   color: colors.textFaint,
   marginTop: 6,
   fontFamily: font.mono,
@@ -122,7 +122,7 @@ const inputStyle: CSSProperties = {
   borderRadius: radius.md,
   background: colors.surface,
   padding: "0 14px",
-  fontSize: 14,
+  fontSize: 16,
   outline: "none",
   transition: "border-color .16s",
   color: colors.text,

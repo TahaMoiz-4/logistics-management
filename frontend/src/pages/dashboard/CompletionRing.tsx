@@ -47,9 +47,9 @@ export function CompletionRing({ pct, size = 140 }: { pct: number; size?: number
           justifyContent: "center",
         }}
       >
-        <span style={{ fontSize: 34, fontWeight: 700, letterSpacing: "-.03em", lineHeight: 1 }}>
+        <span style={{ fontSize: 37, fontWeight: 700, letterSpacing: "-.03em", lineHeight: 1 }}>
           {Math.round(clamped)}
-          <span style={{ fontSize: 17, color: "#8f8f8a", fontFamily: font.mono }}>%</span>
+          <span style={{ fontSize: 19, color: "#8f8f8a", fontFamily: font.mono }}>%</span>
         </span>
       </div>
     </div>

@@ -76,10 +76,10 @@ export function PlansListPage() {
             onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
           >
             <span>
-              <span style={{ fontWeight: 600, fontSize: 14, display: "block" }}>
+              <span style={{ fontWeight: 600, fontSize: 16, display: "block" }}>
                 {p.name ?? `Plan ${p.id}`}
               </span>
-              <span style={{ fontFamily: font.mono, fontSize: 11, color: "#a0a09a" }}>PLN-{p.id}</span>
+              <span style={{ fontFamily: font.mono, fontSize: 12, color: "#a0a09a" }}>PLN-{p.id}</span>
             </span>
             <span style={monoMuted}>{shortDate(p.planned_date)}</span>
             <span>
@@ -112,7 +112,7 @@ const newBtn: CSSProperties = {
   border: "none",
   background: colors.ink,
   color: colors.inkOnDark,
-  fontSize: 14,
+  fontSize: 16,
   fontWeight: 600,
   cursor: "pointer",
 };
@@ -129,20 +129,20 @@ const row: CSSProperties = {
   alignItems: "center",
   padding: "15px 22px",
   borderTop: `1px solid ${colors.track}`,
-  fontSize: 13,
+  fontSize: 15,
   transition: "background .15s",
 };
 const head: CSSProperties = {
   background: colors.surfaceMuted,
   borderTop: "none",
   fontFamily: font.mono,
-  fontSize: 10,
+  fontSize: 11,
   letterSpacing: ".06em",
   textTransform: "uppercase",
   color: "#a0a09a",
 };
-const mono: CSSProperties = { fontFamily: font.mono, fontSize: 13 };
-const monoMuted: CSSProperties = { fontFamily: font.mono, fontSize: 12, color: colors.textMuted };
+const mono: CSSProperties = { fontFamily: font.mono, fontSize: 15 };
+const monoMuted: CSSProperties = { fontFamily: font.mono, fontSize: 14, color: colors.textMuted };
 const stateBox: CSSProperties = {
   padding: "48px 22px",
   display: "flex",

@@ -63,10 +63,10 @@ export function PlanLivePage() {
             ALNS solver · {errored ? "error" : done ? "complete" : "live stream"}
           </span>
         </div>
-        <div style={{ fontSize: 30, fontWeight: 700, letterSpacing: "-.02em", marginTop: 20 }}>
+        <div style={{ fontSize: 32, fontWeight: 700, letterSpacing: "-.02em", marginTop: 20 }}>
           {errored ? "Solve failed" : done ? "Optimization complete" : "Objective converging"}
         </div>
-        <div style={{ fontSize: 13, color: "#b7b7b2", marginTop: 4 }}>
+        <div style={{ fontSize: 15, color: "#b7b7b2", marginTop: 4 }}>
           {errored
             ? solver.errorMessage ?? "The solver reported an error."
             : "Watch total cost fall as the solver explores thousands of route configurations."}
@@ -83,7 +83,7 @@ export function PlanLivePage() {
           ) : (
             <div style={chartPlaceholder}>
               <Spinner size={22} track="rgba(245,245,242,.2)" color="#f5f5f2" />
-              <span style={{ fontFamily: font.mono, fontSize: 12, color: "#8f8f8a" }}>
+              <span style={{ fontFamily: font.mono, fontSize: 14, color: "#8f8f8a" }}>
                 {solver.stage === "loading" ? "loading road network…" : "warming up…"}
               </span>
             </div>
@@ -107,7 +107,7 @@ export function PlanLivePage() {
       {/* side panel */}
       <div style={{ display: "flex", flexDirection: "column", gap: 18, position: "sticky", top: 20 }}>
         <div style={sideCard}>
-          <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 18 }}>Solve progress</div>
+          <div style={{ fontWeight: 700, fontSize: 17, marginBottom: 18 }}>Solve progress</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             {STAGES.map((s, i) => {
               const state: "done" | "active" | "pending" =
@@ -191,7 +191,7 @@ const darkCard: CSSProperties = {
 };
 const eyebrow: CSSProperties = {
   fontFamily: font.mono,
-  fontSize: 12,
+  fontSize: 14,
   letterSpacing: ".08em",
   textTransform: "uppercase",
   color: "#8f8f8a",
@@ -233,14 +233,14 @@ const liveStatBox: CSSProperties = {
 };
 const liveStatLabel: CSSProperties = {
   fontFamily: font.mono,
-  fontSize: 10,
+  fontSize: 11,
   letterSpacing: ".06em",
   textTransform: "uppercase",
   color: "#8f8f8a",
 };
 const liveStatValue: CSSProperties = {
   fontFamily: font.mono,
-  fontSize: 22,
+  fontSize: 24,
   fontWeight: 700,
   marginTop: 6,
 };
@@ -265,7 +265,7 @@ function stageDot(state: "done" | "active" | "pending"): CSSProperties {
 }
 function stageLabel(state: "done" | "active" | "pending"): CSSProperties {
   return {
-    fontSize: 13,
+    fontSize: 15,
     fontWeight: state === "pending" ? 400 : 600,
     color: state === "pending" ? colors.textFaint : colors.text,
   };
@@ -276,7 +276,7 @@ const viewBtn: CSSProperties = {
   borderRadius: radius.lg,
   background: colors.ink,
   color: colors.inkOnDark,
-  fontSize: 15,
+  fontSize: 17,
   fontWeight: 700,
   cursor: "pointer",
   display: "flex",
@@ -291,7 +291,7 @@ const backBtn: CSSProperties = {
   borderRadius: radius.lg,
   background: colors.surface,
   color: colors.text,
-  fontSize: 14,
+  fontSize: 16,
   fontWeight: 600,
   cursor: "pointer",
 };

@@ -75,8 +75,8 @@ function WorkerCard({ worker }: { worker: Worker }) {
       <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
         <div style={avatar}>{initials(worker.name)}</div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontWeight: 700, fontSize: 15 }}>{worker.name ?? `Worker #${worker.id}`}</div>
-          <div style={{ fontFamily: font.mono, fontSize: 11, color: "#9a9a95", marginTop: 2 }}>
+          <div style={{ fontWeight: 700, fontSize: 17 }}>{worker.name ?? `Worker #${worker.id}`}</div>
+          <div style={{ fontFamily: font.mono, fontSize: 12, color: "#9a9a95", marginTop: 2 }}>
             {worker.employee_id ? `EMP-${worker.employee_id}` : `#${worker.id}`} ·{" "}
             {TYPE_LABEL[worker.worker_type] ?? worker.worker_type}
           </div>
@@ -86,7 +86,7 @@ function WorkerCard({ worker }: { worker: Worker }) {
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 16 }}>
         {worker.skills.length === 0 && (
-          <span style={{ fontSize: 12, color: colors.textFaint }}>No skills listed</span>
+          <span style={{ fontSize: 14, color: colors.textFaint }}>No skills listed</span>
         )}
         {worker.skills.map((s) => (
           <span key={s} style={skillChip}>
@@ -139,11 +139,11 @@ const avatar: CSSProperties = {
   alignItems: "center",
   justifyContent: "center",
   fontWeight: 700,
-  fontSize: 16,
+  fontSize: 18,
   flexShrink: 0,
 };
 const skillChip: CSSProperties = {
-  fontSize: 11,
+  fontSize: 12,
   padding: "4px 10px",
   borderRadius: 8,
   background: colors.track,
@@ -158,12 +158,12 @@ const footerRow: CSSProperties = {
   paddingTop: 14,
   borderTop: `1px solid ${colors.track}`,
   fontFamily: font.mono,
-  fontSize: 11,
+  fontSize: 12,
   color: colors.textMuted,
 };
 const reasonBox: CSSProperties = {
   marginTop: 12,
-  fontSize: 12,
+  fontSize: 14,
   padding: "9px 12px",
   border: `1px dashed ${colors.ink}`,
   borderRadius: 10,

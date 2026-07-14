@@ -37,7 +37,7 @@ export class ErrorBoundary extends Component<Props, State> {
       return (
         <div style={box}>
           <div style={tag}>Something broke on this page</div>
-          <div style={{ fontWeight: 700, fontSize: 16 }}>{this.state.error.name}</div>
+          <div style={{ fontWeight: 700, fontSize: 18 }}>{this.state.error.name}</div>
           <div style={msg}>{this.state.error.message}</div>
           <pre style={stack}>{this.state.error.stack}</pre>
           <button style={btn} onClick={() => this.setState({ error: null })}>
@@ -62,15 +62,15 @@ const box: React.CSSProperties = {
 };
 const tag: React.CSSProperties = {
   fontFamily: font.mono,
-  fontSize: 11,
+  fontSize: 12,
   letterSpacing: ".06em",
   textTransform: "uppercase",
   color: "#b42318",
 };
-const msg: React.CSSProperties = { fontSize: 14, color: colors.text };
+const msg: React.CSSProperties = { fontSize: 16, color: colors.text };
 const stack: React.CSSProperties = {
   fontFamily: font.mono,
-  fontSize: 11,
+  fontSize: 12,
   color: colors.textMuted,
   background: colors.surfaceMuted,
   padding: 14,

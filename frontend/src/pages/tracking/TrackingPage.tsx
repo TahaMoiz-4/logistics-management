@@ -64,7 +64,7 @@ export function TrackingPage() {
         {positions.length === 0 && !live.isLoading && (
           <div style={emptyOverlay}>
             <div style={{ fontWeight: 600, marginBottom: 4 }}>No positions reported</div>
-            <div style={{ fontSize: 12, color: colors.textMuted }}>
+            <div style={{ fontSize: 14, color: colors.textMuted }}>
               Field devices haven't sent GPS recently.
             </div>
           </div>
@@ -75,7 +75,7 @@ export function TrackingPage() {
           <div className="ng-fade" style={selCard}>
             <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
               <div>
-                <div style={{ fontWeight: 700, fontSize: 15 }}>{selected.name ?? "Unknown"}</div>
+                <div style={{ fontWeight: 700, fontSize: 17 }}>{selected.name ?? "Unknown"}</div>
                 <div style={selMeta}>
                   {selected.employee_code ?? `#${selected.subject_id}`} ·{" "}
                   {TYPE_LABEL[selected.subject_type] ?? selected.subject_type}
@@ -86,7 +86,7 @@ export function TrackingPage() {
               </button>
             </div>
             <div style={selDivider} />
-            <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: 12 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: 14 }}>
               <div style={selRow}>
                 <span style={{ color: "#8f8f8a" }}>Contact</span>
                 <span style={{ fontFamily: font.mono }}>{selected.contact_number ?? "—"}</span>
@@ -107,7 +107,7 @@ export function TrackingPage() {
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         <div style={sectionLabel}>Tracked staff</div>
         {positions.length === 0 && (
-          <div style={{ fontSize: 12, color: colors.textFaint, padding: "4px 2px" }}>None reporting.</div>
+          <div style={{ fontSize: 14, color: colors.textFaint, padding: "4px 2px" }}>None reporting.</div>
         )}
         {positions.map((p) => (
           <TrackRow
@@ -141,12 +141,12 @@ function TrackRow({
     <div onClick={onClick} style={trackRow(active)}>
       <span style={mark(pos)} />
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontWeight: 600, fontSize: 13 }}>{pos.name ?? "Unknown"}</div>
-        <div style={{ fontFamily: font.mono, fontSize: 11, color: "#9a9a95" }}>
+        <div style={{ fontWeight: 600, fontSize: 15 }}>{pos.name ?? "Unknown"}</div>
+        <div style={{ fontFamily: font.mono, fontSize: 12, color: "#9a9a95" }}>
           {TYPE_LABEL[pos.subject_type] ?? pos.subject_type} · {pos.employee_code ?? `#${pos.subject_id}`}
         </div>
       </div>
-      <span style={{ fontFamily: font.mono, fontSize: 10, color: pos.is_stale ? "#c98b6a" : "#b0b0aa", whiteSpace: "nowrap" }}>
+      <span style={{ fontFamily: font.mono, fontSize: 11, color: pos.is_stale ? "#c98b6a" : "#b0b0aa", whiteSpace: "nowrap" }}>
         {agoLabel(pos.seconds_ago)}
       </span>
     </div>
@@ -158,9 +158,9 @@ function RosterRow({ entry }: { entry: AvailabilityRosterEntry }) {
     <div style={rosterRow}>
       <span style={rosterDot(entry.available)} />
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontWeight: 500, fontSize: 13 }}>{entry.name}</div>
+        <div style={{ fontWeight: 500, fontSize: 15 }}>{entry.name}</div>
         {entry.unavailable_reason && (
-          <div style={{ fontSize: 11, color: "#a0a09a" }}>{entry.unavailable_reason}</div>
+          <div style={{ fontSize: 12, color: "#a0a09a" }}>{entry.unavailable_reason}</div>
         )}
       </div>
       <span style={rosterStatus(entry.available)}>
@@ -213,7 +213,7 @@ const liveBadge: CSSProperties = {
   borderRadius: radius.md,
   padding: "8px 13px",
   fontFamily: font.mono,
-  fontSize: 11,
+  fontSize: 12,
 };
 const livePip: CSSProperties = {
   width: 7,
@@ -247,7 +247,7 @@ const selCard: CSSProperties = {
   padding: 18,
   boxShadow: "0 12px 40px rgba(0,0,0,.28)",
 };
-const selMeta: CSSProperties = { fontFamily: font.mono, fontSize: 11, color: "#8f8f8a", marginTop: 2 };
+const selMeta: CSSProperties = { fontFamily: font.mono, fontSize: 12, color: "#8f8f8a", marginTop: 2 };
 const selClose: CSSProperties = {
   background: "rgba(255,255,255,.1)",
   border: "none",
@@ -264,7 +264,7 @@ const selDivider: CSSProperties = { height: 1, background: "rgba(255,255,255,.1)
 const selRow: CSSProperties = { display: "flex", justifyContent: "space-between" };
 const sectionLabel: CSSProperties = {
   fontFamily: font.mono,
-  fontSize: 10,
+  fontSize: 11,
   letterSpacing: ".06em",
   textTransform: "uppercase",
   color: "#a0a09a",
@@ -302,7 +302,7 @@ function rosterDot(available: boolean): CSSProperties {
 }
 function rosterStatus(available: boolean): CSSProperties {
   return {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: 600,
     padding: "3px 9px",
     borderRadius: 7,

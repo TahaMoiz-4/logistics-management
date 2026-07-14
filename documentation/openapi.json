@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Logistics Management — ALNS Routing",
+    "title": "Logistics Management \u2014 ALNS Routing",
     "description": "Nurse/technician field-service DARP routing engine.",
     "version": "0.1.0"
   },
@@ -2588,7 +2588,7 @@
           "route-plans"
         ],
         "summary": "Approve Route Plan",
-        "description": "Approve a solved (ready) plan: dispatch it, mark its orders assigned,\ninitialize each worker stop to pending, and push a job alert to each\nassigned worker's devices. Workers are NOT locked — a worker can hold jobs\nacross multiple plans, each stop with its own status.",
+        "description": "Approve a solved (ready) plan: dispatch it, mark its orders assigned,\ninitialize each worker stop to pending, and push a job alert to each\nassigned worker's devices. Workers are NOT locked \u2014 a worker can hold jobs\nacross multiple plans, each stop with its own status.",
         "operationId": "approve_route_plan_v1_route_plans__plan_id__approve_post",
         "parameters": [
           {
@@ -7413,6 +7413,17 @@
           "worker_type": {
             "type": "string",
             "title": "Worker Type"
+          },
+          "worker_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Worker Name"
           },
           "stops": {
             "items": {

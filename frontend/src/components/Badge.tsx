@@ -11,7 +11,7 @@ const statusBase: CSSProperties = {
   gap: 6,
   padding: "3px 9px",
   borderRadius: 7,
-  fontSize: 11,
+  fontSize: 12,
   fontWeight: 600,
   whiteSpace: "nowrap",
 };
@@ -48,7 +48,7 @@ const prioBase: CSSProperties = {
   display: "inline-flex",
   padding: "2px 7px",
   borderRadius: 6,
-  fontSize: 10,
+  fontSize: 11,
   fontWeight: 700,
   letterSpacing: ".03em",
   textTransform: "uppercase",

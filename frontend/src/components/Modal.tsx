@@ -49,8 +49,8 @@ export function SlideOver({
       >
         <div style={header}>
           <div>
-            <div style={{ fontWeight: 700, fontSize: 17 }}>{title}</div>
-            {subtitle && <div style={{ fontSize: 12, color: colors.textFaint, marginTop: 3 }}>{subtitle}</div>}
+            <div style={{ fontWeight: 700, fontSize: 19 }}>{title}</div>
+            {subtitle && <div style={{ fontSize: 14, color: colors.textFaint, marginTop: 3 }}>{subtitle}</div>}
           </div>
           <button style={closeBtn} onClick={onClose} title="Close" aria-label="Close">
             <Icon name="close" size={18} />

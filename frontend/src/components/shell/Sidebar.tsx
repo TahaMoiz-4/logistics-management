@@ -34,7 +34,7 @@ export function Sidebar() {
       <div style={{ padding: "26px 22px 20px", display: "flex", alignItems: "center", gap: 11 }}>
         <div style={brandMark}>N</div>
         <div style={{ lineHeight: 1 }}>
-          <div style={{ fontWeight: 700, fontSize: 16, letterSpacing: "-.02em" }}>Nightingale</div>
+          <div style={{ fontWeight: 700, fontSize: 18, letterSpacing: "-.02em" }}>Nightingale</div>
           <div style={brandSub}>DISPATCH CONSOLE</div>
         </div>
       </div>
@@ -60,7 +60,7 @@ export function Sidebar() {
         <div style={{ display: "flex", alignItems: "center", gap: 11 }}>
           <div style={avatar}>{initials}</div>
           <div style={{ lineHeight: 1.2, minWidth: 0 }}>
-            <div style={{ fontWeight: 600, fontSize: 13 }}>{user?.username ?? "—"}</div>
+            <div style={{ fontWeight: 600, fontSize: 15 }}>{user?.username ?? "—"}</div>
             <div style={companyStyle}>{companyLabel}</div>
           </div>
           <button
@@ -112,11 +112,11 @@ const brandMark: CSSProperties = {
   alignItems: "center",
   justifyContent: "center",
   fontWeight: 700,
-  fontSize: 17,
+  fontSize: 19,
 };
 const brandSub: CSSProperties = {
   fontFamily: font.mono,
-  fontSize: 10,
+  fontSize: 11,
   color: colors.textFaint,
   marginTop: 3,
   letterSpacing: ".04em",
@@ -128,7 +128,7 @@ function navItemStyle(active: boolean): CSSProperties {
     gap: 11,
     padding: "9px 12px",
     borderRadius: radius.md,
-    fontSize: 13.5,
+    fontSize: 15.5,
     fontWeight: active ? 600 : 500,
     color: active ? colors.inkOnDark : colors.textMuted,
     background: active ? colors.ink : "transparent",
@@ -138,7 +138,7 @@ function navItemStyle(active: boolean): CSSProperties {
 const navBadge: CSSProperties = {
   marginLeft: "auto",
   fontFamily: font.mono,
-  fontSize: 11,
+  fontSize: 12,
   background: colors.ink,
   color: colors.inkOnDark,
   borderRadius: 20,
@@ -153,11 +153,11 @@ const avatar: CSSProperties = {
   alignItems: "center",
   justifyContent: "center",
   fontWeight: 700,
-  fontSize: 14,
+  fontSize: 16,
   color: "#4a4a46",
 };
 const companyStyle: CSSProperties = {
-  fontSize: 11,
+  fontSize: 12,
   color: colors.textFaint,
   whiteSpace: "nowrap",
   overflow: "hidden",

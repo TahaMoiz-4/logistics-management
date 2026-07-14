@@ -61,7 +61,7 @@ const toastStyle: CSSProperties = {
   color: colors.inkOnDark,
   padding: "13px 20px",
   borderRadius: radius.lg,
-  fontSize: 13,
+  fontSize: 15,
   fontWeight: 500,
   boxShadow: shadow.lifted,
   display: "flex",

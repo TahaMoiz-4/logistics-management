@@ -67,8 +67,8 @@ function DriversTable() {
   const cols: Column<Driver>[] = [
     { key: "name", header: "Driver", width: "1.2fr", render: (d) => <span style={{ fontWeight: 600 }}>{d.name ?? `Driver #${d.id}`}</span> },
     { key: "vehicle", header: "Vehicle", width: ".9fr", render: (d) => <span style={{ ...mono, fontWeight: 700 }}>{d.vehicle_plate ?? "—"}</span> },
-    { key: "skills", header: "Skills", width: "1.2fr", render: (d) => <span style={{ ...cap, color: colors.textMuted, fontSize: 12 }}>{d.skills.length ? d.skills.join(", ") : "—"}</span> },
-    { key: "contact", header: "Contact", width: "1.1fr", render: (d) => <span style={{ ...mono, fontSize: 12, color: colors.textMuted }}>{d.contact_number ?? "—"}</span> },
+    { key: "skills", header: "Skills", width: "1.2fr", render: (d) => <span style={{ ...cap, color: colors.textMuted, fontSize: 14 }}>{d.skills.length ? d.skills.join(", ") : "—"}</span> },
+    { key: "contact", header: "Contact", width: "1.1fr", render: (d) => <span style={{ ...mono, fontSize: 14, color: colors.textMuted }}>{d.contact_number ?? "—"}</span> },
     { key: "status", header: "Status", width: ".9fr", render: (d) => <StatusBadge status={d.operational_status ?? "active"} /> },
   ];
   return (
@@ -95,7 +95,7 @@ function DepotsTable() {
       header: "Coordinates",
       width: "1fr",
       render: (d) => (
-        <span style={{ ...mono, fontSize: 12, color: colors.textMuted }}>
+        <span style={{ ...mono, fontSize: 14, color: colors.textMuted }}>
           {d.lat != null && d.lng != null ? `${d.lat.toFixed(4)}, ${d.lng.toFixed(4)}` : "—"}
         </span>
       ),
@@ -133,11 +133,11 @@ function tabStyle(active: boolean): CSSProperties {
     border: "none",
     background: active ? colors.ink : "transparent",
     color: active ? colors.inkOnDark : colors.textMuted,
-    fontSize: 13,
+    fontSize: 15,
     fontWeight: 600,
     cursor: "pointer",
     transition: "all .15s",
   };
 }
-const mono: CSSProperties = { fontFamily: font.mono, fontSize: 12, fontWeight: 700 };
+const mono: CSSProperties = { fontFamily: font.mono, fontSize: 14, fontWeight: 700 };
 const cap: CSSProperties = { textTransform: "capitalize" };

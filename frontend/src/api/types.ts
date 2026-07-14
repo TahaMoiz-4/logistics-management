@@ -318,6 +318,7 @@ export interface WorkerAssignment {
   id: number;
   worker_id: number;
   worker_type: string;
+  worker_name?: string | null;
   stops: WorkerStop[];
 }
 

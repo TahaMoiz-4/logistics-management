@@ -31,8 +31,8 @@ export function Diagnostics({ diag }: { diag: DiagnosticsOut }) {
 
   return (
     <div style={card}>
-      <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 4 }}>Solver diagnostics</div>
-      <div style={{ fontSize: 12, color: colors.textFaint, marginBottom: 22 }}>
+      <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 4 }}>Solver diagnostics</div>
+      <div style={{ fontSize: 14, color: colors.textFaint, marginBottom: 22 }}>
         What the ALNS solver optimized and how it got there.
       </div>
 
@@ -49,10 +49,10 @@ export function Diagnostics({ diag }: { diag: DiagnosticsOut }) {
       <div style={twoCol}>
         {/* cost breakdown */}
         <div>
-          <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 16 }}>Cost breakdown</div>
+          <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 16 }}>Cost breakdown</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {costs.length === 0 && (
-              <div style={{ fontSize: 12, color: colors.textFaint }}>No cost components.</div>
+              <div style={{ fontSize: 14, color: colors.textFaint }}>No cost components.</div>
             )}
             {costs.map(([label, value]) => (
               <div key={label}>
@@ -74,7 +74,7 @@ export function Diagnostics({ diag }: { diag: DiagnosticsOut }) {
         <div style={{ display: "flex", flexDirection: "column", gap: 26 }}>
           {diag.iteration_trace && diag.iteration_trace.best_so_far.length > 1 && (
             <div>
-              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 12 }}>Objective curve</div>
+              <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 12 }}>Objective curve</div>
               <div style={{ border: `1px solid ${colors.track}`, borderRadius: radius.md, padding: 12 }}>
                 <ObjectiveChart
                   best={diag.iteration_trace.best_so_far}
@@ -87,21 +87,25 @@ export function Diagnostics({ diag }: { diag: DiagnosticsOut }) {
 
           {operators.length > 0 && (
             <div>
-              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 14 }}>Operator effectiveness</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 14 }}>Operator effectiveness</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                 {operators.map((o) => (
-                  <div key={o.kind + o.name} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    <span style={opName}>{humanizeSkill(o.name)}</span>
-                    <span style={kindChip(o.kind)}>{o.kind}</span>
-                    <div style={{ flex: 1, height: 6, background: colors.track, borderRadius: 4, overflow: "hidden" }}>
+                  <div key={o.kind + o.name} style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={kindChip(o.kind)}>{o.kind}</span>
+                      <span style={opName}>{humanizeSkill(o.name)}</span>
+                      <span style={opCount}>
+                        {o.used.toLocaleString()}× · ★{o.newBest}
+                      </span>
+                    </div>
+                    <div style={{ height: 6, background: colors.track, borderRadius: 4, overflow: "hidden" }}>
                       <div style={{ height: "100%", width: `${(o.used / opMax) * 100}%`, background: colors.ink }} />
                     </div>
-                    <span style={opCount}>{o.newBest}</span>
                   </div>
                 ))}
               </div>
-              <div style={{ fontSize: 10, color: colors.textFaint, marginTop: 10, fontFamily: font.mono }}>
-                bar = times used · number = new-best hits
+              <div style={{ fontSize: 11, color: colors.textFaint, marginTop: 10, fontFamily: font.mono }}>
+                bar = times used · ×N = runs · ★N = new-best hits
               </div>
             </div>
           )}
@@ -154,33 +158,32 @@ const tileGrid: CSSProperties = {
 const tile: CSSProperties = { background: colors.surfaceMuted, borderRadius: radius.md, padding: 15 };
 const tileLabel: CSSProperties = {
   fontFamily: font.mono,
-  fontSize: 10,
+  fontSize: 11,
   letterSpacing: ".04em",
   textTransform: "uppercase",
   color: "#a0a09a",
 };
-const tileValue: CSSProperties = { fontFamily: font.mono, fontSize: 16, fontWeight: 700, marginTop: 6 };
+const tileValue: CSSProperties = { fontFamily: font.mono, fontSize: 18, fontWeight: 700, marginTop: 6 };
 const twoCol: CSSProperties = { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32 };
 const costRow: CSSProperties = {
   display: "flex",
   justifyContent: "space-between",
   marginBottom: 5,
-  fontSize: 12,
+  fontSize: 14,
 };
 const track: CSSProperties = { height: 8, background: colors.track, borderRadius: 5, overflow: "hidden" };
 const bar: CSSProperties = { height: "100%", background: colors.ink, borderRadius: 5 };
 const opName: CSSProperties = {
   fontFamily: font.mono,
-  fontSize: 11,
-  width: 120,
-  whiteSpace: "nowrap",
-  overflow: "hidden",
-  textOverflow: "ellipsis",
+  fontSize: 12,
+  flex: 1,
+  minWidth: 0,
+  textTransform: "capitalize",
 };
 function kindChip(kind: string): CSSProperties {
   return {
     fontFamily: font.mono,
-    fontSize: 9,
+    fontSize: 10,
     padding: "2px 6px",
     borderRadius: 5,
     textTransform: "uppercase",
@@ -190,8 +193,9 @@ function kindChip(kind: string): CSSProperties {
 }
 const opCount: CSSProperties = {
   fontFamily: font.mono,
-  fontSize: 11,
+  fontSize: 12,
   color: colors.textMuted,
-  width: 34,
+  flexShrink: 0,
   textAlign: "right",
+  whiteSpace: "nowrap",
 };

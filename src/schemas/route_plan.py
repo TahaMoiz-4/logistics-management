@@ -131,6 +131,9 @@ class WorkerAssignmentOut(BaseModel):
     id: int
     worker_id: int
     worker_type: str
+    # resolved display name of the worker (via nurses/technicians -> employee);
+    # null if the soft worker_id can't be resolved. Mirrors driver_name on map-data.
+    worker_name: Optional[str] = None
     stops: list[WorkerStopOut]
 
 

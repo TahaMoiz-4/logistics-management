@@ -32,11 +32,12 @@ export function ObjectiveChart({
     [best, current, width, height, maxPoints],
   );
 
-  const ink = variant === "dark" ? "#f5f5f2" : "#161616";
-  const grid = variant === "dark" ? "rgba(255,255,255,.08)" : "#ededea";
-  const gridText = variant === "dark" ? "#6f6f6b" : "#b0b0aa";
-  const curStroke = variant === "dark" ? "rgba(245,245,242,.35)" : "#c8c8c2";
-  const areaFill = variant === "dark" ? "rgba(245,245,242,.08)" : "rgba(22,22,22,.05)";
+  const ink = variant === "dark" ? "#ffffff" : "#161616";
+  const grid = variant === "dark" ? "rgba(255,255,255,.10)" : "#ededea";
+  const gridText = variant === "dark" ? "#8a8a85" : "#a0a09a";
+  // Keep the noisy "current" trace faint so it never competes with the best line.
+  const curStroke = variant === "dark" ? "rgba(245,245,242,.18)" : "#dcdcd6";
+  const areaFill = variant === "dark" ? "rgba(255,255,255,.10)" : "rgba(22,22,22,.05)";
 
   if (best.length === 0) {
     return null;
@@ -46,12 +47,12 @@ export function ObjectiveChart({
     <svg viewBox={`0 0 ${width} ${height}`} width="100%" style={{ display: "block" }}>
       {gridLines.map((gy, i) => (
         <g key={i}>
-          <line x1={34} y1={gy} x2={width - 16} y2={gy} stroke={grid} strokeWidth={1} />
+          <line x1={46} y1={gy} x2={width - 16} y2={gy} stroke={grid} strokeWidth={1} />
           <text
-            x={28}
+            x={40}
             y={gy + 3}
             textAnchor="end"
-            fontSize={9}
+            fontSize={10}
             fontFamily={font.mono}
             fill={gridText}
           >
@@ -61,7 +62,7 @@ export function ObjectiveChart({
       ))}
 
       {curPts && (
-        <polyline points={curPts} fill="none" stroke={curStroke} strokeWidth={1.4} />
+        <polyline points={curPts} fill="none" stroke={curStroke} strokeWidth={1} />
       )}
 
       {bestPts.area && <polygon points={bestPts.area} fill={areaFill} />}
@@ -69,12 +70,12 @@ export function ObjectiveChart({
         points={bestPts.line}
         fill="none"
         stroke={ink}
-        strokeWidth={2.4}
+        strokeWidth={3.2}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       {bestPts.head && (
-        <circle cx={bestPts.head[0]} cy={bestPts.head[1]} r={4.5} fill={ink} stroke={variant === "dark" ? "#161616" : "#fff"} strokeWidth={2} />
+        <circle cx={bestPts.head[0]} cy={bestPts.head[1]} r={5} fill={ink} stroke={variant === "dark" ? "#161616" : "#fff"} strokeWidth={2.5} />
       )}
     </svg>
   );
@@ -93,50 +94,72 @@ function build(best: number[], current: number[] | undefined, W: number, H: numb
   const b = downsample(best, maxPoints);
   const c = current ? downsample(current, maxPoints) : undefined;
 
-  // Scale the y-axis primarily to the BEST curve so a flat/near-flat best line
-  // stays readable. The (noisy) current trace can spike far above best; we let
-  // it inform the top of the range only modestly, then clamp it into view so a
-  // single spike doesn't flatten everything else against the axis.
+  // Scale the y-axis to the BEST curve ONLY. The current trace is decorative
+  // noise that can spike enormously (e.g. 5x best); if it drove the range, the
+  // best line would collapse into a flat sliver at the bottom and its descent
+  // (and the tracking dot's movement) would be invisible. So the range hugs
+  // best, giving its improvement the full vertical space; current is drawn but
+  // clamped into that view.
   const bLo = Math.min(...b);
   const bHi = Math.max(...b);
   let lo = bLo;
   let hi = bHi;
+  // Lift the ceiling to include the current trace's *typical* level (a high
+  // percentile, not its max) so the live dot moves within view instead of
+  // pinning to the top on a rare spike.
   if (c && c.length) {
-    const cHi = Math.max(...c);
-    // allow the current trace to lift the ceiling, but only up to ~2.2x the
-    // best-curve's own span above bHi — beyond that we clamp the drawn points.
-    const bestSpan = Math.max(bHi - bLo, bHi * 0.01, 1);
-    hi = Math.min(cHi, bHi + bestSpan * 2.2);
-    lo = Math.min(lo, Math.min(...c));
+    hi = Math.max(hi, percentile(c, 0.9));
   }
   if (lo === hi) {
     // Perfectly flat: open a small symmetric band so the line sits mid-card.
-    const eps = Math.max(Math.abs(hi) * 0.01, 1);
+    const eps = Math.max(Math.abs(hi) * 0.02, 1);
     lo -= eps;
     hi += eps;
   }
-  const pad = (hi - lo) * 0.12;
+  const pad = (hi - lo) * 0.15;
   lo -= pad;
   hi += pad;
   const rng = hi - lo;
 
+  // Wider left gutter so multi-digit axis labels aren't clipped.
+  const LEFT = 46;
   const n = b.length;
-  const px = (i: number) => 34 + (i / Math.max(1, n - 1)) * (W - 50);
+  const px = (i: number) => LEFT + (i / Math.max(1, n - 1)) * (W - LEFT - 16);
   const clampY = (v: number) => Math.max(lo, Math.min(hi, v));
   const py = (v: number) => 18 + (1 - (clampY(v) - lo) / rng) * (H - 44);
 
   const line = b.map((v, i) => `${px(i)},${py(v)}`).join(" ");
   const area =
     n > 1 ? `${px(0)},${py(lo)} ${b.map((v, i) => `${px(i)},${py(v)}`).join(" ")} ${px(n - 1)},${py(lo)}` : "";
-  const head: [number, number] = [px(n - 1), py(b[n - 1])];
+  // The tracking dot rides the CURRENT value (the live probe) when we have one,
+  // so it visibly bobs up/down as the solver explores — even while best is flat.
+  // Falls back to the best endpoint for static charts (diagnostics).
+  const headVal = c && c.length ? c[c.length - 1] : b[n - 1];
+  const head: [number, number] = [px(n - 1), py(headVal)];
   const curPts = c ? c.map((v, i) => `${px(i)},${py(v)}`).join(" ") : undefined;
 
   const gridLines: number[] = [];
   const valLabels: string[] = [];
   for (let g = 0; g <= 4; g++) {
     gridLines.push(18 + (g / 4) * (H - 44));
-    valLabels.push(String(Math.round(hi - (g / 4) * rng)));
+    valLabels.push(abbrev(hi - (g / 4) * rng));
   }
 
   return { bestPts: { line, area, head }, curPts, gridLines, valLabels };
+}
+
+/** Value at the p-th quantile (0..1) of an array, robust to spikes. */
+function percentile(arr: number[], p: number): number {
+  const sorted = [...arr].sort((a, b) => a - b);
+  const idx = Math.min(sorted.length - 1, Math.max(0, Math.round(p * (sorted.length - 1))));
+  return sorted[idx];
+}
+
+/** Compact axis label: 633345 → "633k", 1462 → "1,462". */
+function abbrev(v: number): string {
+  const n = Math.round(v);
+  const abs = Math.abs(n);
+  if (abs >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (abs >= 10_000) return `${Math.round(n / 1000)}k`;
+  return n.toLocaleString();
 }

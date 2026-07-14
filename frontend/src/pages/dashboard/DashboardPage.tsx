@@ -33,7 +33,7 @@ export function DashboardPage() {
       <div style={centerBox}>
         <div style={{ textAlign: "center", color: colors.textMuted }}>
           <div style={{ fontWeight: 600, marginBottom: 6 }}>Couldn't load the dashboard</div>
-          <div style={{ fontSize: 13, marginBottom: 16 }}>
+          <div style={{ fontSize: 15, marginBottom: 16 }}>
             {(error as Error | undefined)?.message ?? "Please try again."}
           </div>
           <button style={retryBtn} onClick={() => refetch()}>
@@ -56,9 +56,9 @@ export function DashboardPage() {
             <div style={heroEyebrow}>Today · Completion</div>
             <div style={heroBig}>
               {deliveredLabel}
-              <span style={{ fontSize: 26, color: "#8f8f8a" }}>/{data.orders_today}</span>
+              <span style={{ fontSize: 28, color: "#8f8f8a" }}>/{data.orders_today}</span>
             </div>
-            <div style={{ fontSize: 13, color: "#b7b7b2", marginTop: 6, maxWidth: 200 }}>
+            <div style={{ fontSize: 15, color: "#b7b7b2", marginTop: 6, maxWidth: 200 }}>
               orders delivered so far today
             </div>
           </div>
@@ -77,7 +77,7 @@ export function DashboardPage() {
           value={
             <span>
               {data.workers_available}
-              <span style={{ fontSize: 24, color: "#c2c2bc" }}>/{data.workers_total}</span>
+              <span style={{ fontSize: 26, color: "#c2c2bc" }}>/{data.workers_total}</span>
             </span>
           }
           caption="Nurses available now"
@@ -96,7 +96,7 @@ export function DashboardPage() {
       <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 18 }}>
         <div style={panel}>
           <div style={panelHead}>
-            <div style={{ fontWeight: 700, fontSize: 15 }}>Order status</div>
+            <div style={{ fontWeight: 700, fontSize: 17 }}>Order status</div>
             <div style={panelHint}>live · polling 10s</div>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -109,20 +109,20 @@ export function DashboardPage() {
         <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
           <div style={panel}>
             <div style={panelHead}>
-              <div style={{ fontWeight: 700, fontSize: 15 }}>Route plans today</div>
-              <span style={{ fontFamily: font.mono, fontSize: 13, color: colors.textFaint }}>
+              <div style={{ fontWeight: 700, fontSize: 17 }}>Route plans today</div>
+              <span style={{ fontFamily: font.mono, fontSize: 15, color: colors.textFaint }}>
                 {data.plans_today}
               </span>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {planStatusRows(data.plan_status_counts).map((row) => (
                 <div key={row.key} style={planRow}>
-                  <span style={{ fontSize: 13, color: colors.textMuted }}>{row.label}</span>
-                  <span style={{ fontFamily: font.mono, fontSize: 13 }}>{row.count}</span>
+                  <span style={{ fontSize: 15, color: colors.textMuted }}>{row.label}</span>
+                  <span style={{ fontFamily: font.mono, fontSize: 15 }}>{row.count}</span>
                 </div>
               ))}
               {data.plans_today === 0 && (
-                <div style={{ fontSize: 12, color: colors.textFaint }}>No plans yet today.</div>
+                <div style={{ fontSize: 14, color: colors.textFaint }}>No plans yet today.</div>
               )}
             </div>
           </div>
@@ -137,8 +137,8 @@ export function DashboardPage() {
               <Icon name="plus" size={20} />
             </span>
             <span>
-              <span style={{ display: "block", fontWeight: 700, fontSize: 15 }}>New route plan</span>
-              <span style={{ display: "block", fontSize: 12, color: "#b7b7b2", marginTop: 2 }}>
+              <span style={{ display: "block", fontWeight: 700, fontSize: 17 }}>New route plan</span>
+              <span style={{ display: "block", fontSize: 14, color: "#b7b7b2", marginTop: 2 }}>
                 Pick orders → optimize with ALNS
               </span>
             </span>
@@ -180,10 +180,10 @@ function StatCard({
         <span style={{ color: colors.textFaint }}>
           <Icon name={icon} />
         </span>
-        <span style={{ fontFamily: font.mono, fontSize: 11, color: colors.textFaint }}>→</span>
+        <span style={{ fontFamily: font.mono, fontSize: 12, color: colors.textFaint }}>→</span>
       </div>
       <div style={statValue}>{value}</div>
-      <div style={{ fontSize: 13, color: colors.textMuted, marginTop: 6 }}>{caption}</div>
+      <div style={{ fontSize: 15, color: colors.textMuted, marginTop: 6 }}>{caption}</div>
       <div style={{ marginTop: 16 }}>{footer}</div>
     </div>
   );
@@ -234,9 +234,9 @@ function MeterRow({ label, count, total, dot, bar }: Omit<MeterRowData, "key">) 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 7 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
           <span style={{ width: 10, height: 10, borderRadius: "50%", background: dot }} />
-          <span style={{ fontSize: 13, fontWeight: 500 }}>{label}</span>
+          <span style={{ fontSize: 15, fontWeight: 500 }}>{label}</span>
         </div>
-        <span style={{ fontFamily: font.mono, fontSize: 13 }}>{count}</span>
+        <span style={{ fontFamily: font.mono, fontSize: 15 }}>{count}</span>
       </div>
       <div style={{ height: 7, background: colors.track, borderRadius: 6, overflow: "hidden" }}>
         <div
@@ -316,13 +316,13 @@ const heroCard: CSSProperties = {
 };
 const heroEyebrow: CSSProperties = {
   fontFamily: font.mono,
-  fontSize: 11,
+  fontSize: 12,
   letterSpacing: ".1em",
   color: "#8f8f8a",
   textTransform: "uppercase",
 };
 const heroBig: CSSProperties = {
-  fontSize: 50,
+  fontSize: 53,
   fontWeight: 700,
   letterSpacing: "-.03em",
   lineHeight: 1.05,
@@ -339,7 +339,7 @@ const statCard: CSSProperties = {
   flexDirection: "column",
 };
 const statValue: CSSProperties = {
-  fontSize: 46,
+  fontSize: 49,
   fontWeight: 700,
   letterSpacing: "-.03em",
   marginTop: 18,
@@ -349,7 +349,7 @@ const statFootMeta: CSSProperties = {
   display: "flex",
   gap: 14,
   fontFamily: font.mono,
-  fontSize: 11,
+  fontSize: 12,
   color: colors.textFaint,
 };
 const panel: CSSProperties = {
@@ -366,14 +366,14 @@ const panelHead: CSSProperties = {
 };
 const panelHint: CSSProperties = {
   fontFamily: font.mono,
-  fontSize: 11,
+  fontSize: 12,
   color: colors.textFaint,
 };
 const planRow: CSSProperties = {
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  fontSize: 13,
+  fontSize: 15,
 };
 const newPlanBtn: CSSProperties = {
   background: colors.ink,

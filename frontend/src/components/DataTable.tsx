@@ -103,7 +103,7 @@ function rowStyle(template: string): CSSProperties {
     alignItems: "center",
     padding: "16px 22px",
     borderTop: `1px solid ${colors.track}`,
-    fontSize: 13,
+    fontSize: 15,
     transition: "background .15s",
   };
 }
@@ -111,7 +111,7 @@ const headStyle: CSSProperties = {
   background: colors.surfaceMuted,
   borderTop: "none",
   fontFamily: font.mono,
-  fontSize: 10,
+  fontSize: 11,
   letterSpacing: ".06em",
   textTransform: "uppercase",
   color: "#a0a09a",

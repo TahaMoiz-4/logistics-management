@@ -357,6 +357,20 @@ def get_worker_assignments(plan_id: int, current: CurrentUser = Depends(get_curr
     loc_ids = {o.location_id for o in orders.values() if o.location_id}
     locs = {l.id: l for l in db.query(Location).filter(Location.id.in_(loc_ids)).all()} if loc_ids else {}
 
+    # resolve worker_id (soft ref into nurses/technicians per worker_type) -> name.
+    # Batched: nurses.id/technicians.id -> employee_id -> Employee.name.
+    from src.db.models import Nurse, Technician, Employee
+    nurse_ids = {a.worker_id for a in assignments if a.worker_type == ServiceType.nurse}
+    tech_ids = {a.worker_id for a in assignments if a.worker_type == ServiceType.technician}
+    nurse_to_emp = {n.id: n.employee_id for n in db.query(Nurse).filter(Nurse.id.in_(nurse_ids)).all()} if nurse_ids else {}
+    tech_to_emp = {t.id: t.employee_id for t in db.query(Technician).filter(Technician.id.in_(tech_ids)).all()} if tech_ids else {}
+    emp_ids = set(nurse_to_emp.values()) | set(tech_to_emp.values())
+    emp_names = {e.id: e.name for e in db.query(Employee).filter(Employee.id.in_(emp_ids)).all()} if emp_ids else {}
+
+    def _worker_name(a) -> str | None:
+        emp_id = (nurse_to_emp if a.worker_type == ServiceType.nurse else tech_to_emp).get(a.worker_id)
+        return emp_names.get(emp_id) if emp_id else None
+
     out = []
     for a in assignments:
         stops = []
@@ -372,6 +386,7 @@ def get_worker_assignments(plan_id: int, current: CurrentUser = Depends(get_curr
         out.append(WorkerAssignmentOut(
             id=a.id, worker_id=a.worker_id,
             worker_type=a.worker_type.value if a.worker_type else "nurse",
+            worker_name=_worker_name(a),
             stops=stops,
         ))
     return out

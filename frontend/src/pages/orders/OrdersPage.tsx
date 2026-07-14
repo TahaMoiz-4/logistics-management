@@ -121,16 +121,16 @@ function OrderRow({ order }: { order: Order }) {
       onMouseEnter={(e) => (e.currentTarget.style.background = colors.surfaceMuted)}
       onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
     >
-      <span style={{ fontFamily: font.mono, fontSize: 12, fontWeight: 700 }}>ORD-{order.id}</span>
+      <span style={{ fontFamily: font.mono, fontSize: 14, fontWeight: 700 }}>ORD-{order.id}</span>
       <span style={{ fontWeight: 500 }}>{order.customer_name ?? `#${order.customer_id}`}</span>
       <span style={{ color: colors.textMuted }}>{location}</span>
-      <span style={{ fontFamily: font.mono, fontSize: 12, color: colors.textMuted }}>
+      <span style={{ fontFamily: font.mono, fontSize: 14, color: colors.textMuted }}>
         {shortDate(order.service_date)}
       </span>
-      <span style={{ fontFamily: font.mono, fontSize: 12, color: colors.textMuted }}>
+      <span style={{ fontFamily: font.mono, fontSize: 14, color: colors.textMuted }}>
         {timeWindow(order.timewindow_start, order.timewindow_end)}
       </span>
-      <span style={{ color: colors.textMuted, fontSize: 12, textTransform: "capitalize" }}>{skills}</span>
+      <span style={{ color: colors.textMuted, fontSize: 14, textTransform: "capitalize" }}>{skills}</span>
       <span>
         <PriorityBadge priority={order.priority} />
       </span>
@@ -159,7 +159,7 @@ function chipStyle(active: boolean): CSSProperties {
     border: `1px solid ${active ? colors.ink : colors.border}`,
     background: active ? colors.ink : colors.surface,
     color: active ? colors.inkOnDark : colors.textMuted,
-    fontSize: 13,
+    fontSize: 15,
     fontWeight: 600,
     cursor: "pointer",
     transition: "all .15s",
@@ -168,7 +168,7 @@ function chipStyle(active: boolean): CSSProperties {
 function chipCount(active: boolean): CSSProperties {
   return {
     fontFamily: font.mono,
-    fontSize: 11,
+    fontSize: 12,
     padding: "1px 7px",
     borderRadius: 20,
     background: active ? "rgba(255,255,255,.16)" : colors.track,
@@ -186,7 +186,7 @@ const addBtn: CSSProperties = {
   border: "none",
   background: colors.ink,
   color: colors.inkOnDark,
-  fontSize: 13,
+  fontSize: 15,
   fontWeight: 600,
   cursor: "pointer",
 };
@@ -203,14 +203,14 @@ const tableRow: CSSProperties = {
   alignItems: "center",
   padding: "15px 22px",
   borderTop: `1px solid ${colors.track}`,
-  fontSize: 13,
+  fontSize: 15,
   transition: "background .15s",
 };
 const headRow: CSSProperties = {
   background: colors.surfaceMuted,
   borderTop: "none",
   fontFamily: font.mono,
-  fontSize: 10,
+  fontSize: 11,
   letterSpacing: ".06em",
   textTransform: "uppercase",
   color: "#a0a09a",

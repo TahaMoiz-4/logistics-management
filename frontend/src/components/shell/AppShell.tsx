@@ -40,10 +40,10 @@ function Header({ title, subtitle, clock }: { title: string; subtitle: ReactNode
   return (
     <header style={headerStyle}>
       <div>
-        <div style={{ fontSize: 19, fontWeight: 700, letterSpacing: "-.02em", lineHeight: 1 }}>
+        <div style={{ fontSize: 21, fontWeight: 700, letterSpacing: "-.02em", lineHeight: 1 }}>
           {title}
         </div>
-        <div style={{ fontSize: 12, color: colors.textFaint, marginTop: 3 }}>{subtitle}</div>
+        <div style={{ fontSize: 14, color: colors.textFaint, marginTop: 3 }}>{subtitle}</div>
       </div>
       <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 12 }}>
         <div style={searchStyle}>
@@ -104,7 +104,7 @@ const searchStyle: CSSProperties = {
   border: `1px solid ${colors.border}`,
   borderRadius: radius.md,
   color: colors.textFaint,
-  fontSize: 13,
+  fontSize: 15,
   width: 230,
 };
 const clockStyle: CSSProperties = {
@@ -117,7 +117,7 @@ const clockStyle: CSSProperties = {
   border: `1px solid ${colors.border}`,
   borderRadius: radius.md,
   fontFamily: font.mono,
-  fontSize: 12,
+  fontSize: 14,
 };
 const livePip: CSSProperties = {
   width: 7,

@@ -103,8 +103,8 @@ export function NewPlanPage() {
         {groups.map((g) => (
           <div key={g.date}>
             <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 12 }}>
-              <span style={{ fontWeight: 700, fontSize: 15 }}>{shortDate(g.date)}</span>
-              <span style={{ fontFamily: font.mono, fontSize: 12, color: "#a0a09a" }}>
+              <span style={{ fontWeight: 700, fontSize: 17 }}>{shortDate(g.date)}</span>
+              <span style={{ fontFamily: font.mono, fontSize: 14, color: "#a0a09a" }}>
                 {g.orders.length} orders
               </span>
             </div>
@@ -119,10 +119,10 @@ export function NewPlanPage() {
 
       {/* right: solve setup */}
       <div style={setupCard}>
-        <div style={{ fontWeight: 700, fontSize: 16 }}>Solve setup</div>
+        <div style={{ fontWeight: 700, fontSize: 18 }}>Solve setup</div>
         <div style={selectedBox}>
-          <span style={{ fontSize: 13, color: colors.textMuted }}>Orders selected</span>
-          <span style={{ fontFamily: font.mono, fontSize: 26, fontWeight: 700 }}>{picked.size}</span>
+          <span style={{ fontSize: 15, color: colors.textMuted }}>Orders selected</span>
+          <span style={{ fontFamily: font.mono, fontSize: 28, fontWeight: 700 }}>{picked.size}</span>
         </div>
 
         {multiDate && (
@@ -131,7 +131,7 @@ export function NewPlanPage() {
           </div>
         )}
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 10, fontSize: 13 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, fontSize: 15 }}>
           <div style={kv}>
             <span style={{ color: colors.textMuted }}>Repair mode</span>
             <span style={{ fontFamily: font.mono }}>{REPAIR_MODE}</span>
@@ -175,19 +175,19 @@ function PickRow({
   return (
     <div onClick={onToggle} style={pickRow(checked)}>
       <span style={checkbox(checked)}>{checked && <Icon name="check" size={13} />}</span>
-      <span style={{ fontFamily: font.mono, fontSize: 12, fontWeight: 700, width: 74 }}>
+      <span style={{ fontFamily: font.mono, fontSize: 14, fontWeight: 700, width: 74 }}>
         ORD-{order.id}
       </span>
-      <span style={{ fontWeight: 500, fontSize: 13, width: 130, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+      <span style={{ fontWeight: 500, fontSize: 15, width: 130, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
         {order.name ?? `ORD-${order.id}`}
       </span>
-      <span style={{ color: colors.textMuted, fontSize: 13, flex: 1, minWidth: 0 }}>
+      <span style={{ color: colors.textMuted, fontSize: 15, flex: 1, minWidth: 0 }}>
         {order.address_text ?? "—"}
       </span>
-      <span style={{ fontFamily: font.mono, fontSize: 12, color: colors.textMuted }}>
+      <span style={{ fontFamily: font.mono, fontSize: 14, color: colors.textMuted }}>
         {timeWindow(order.timewindow_start, order.timewindow_end)}
       </span>
-      <span style={{ color: "#9a9a95", fontSize: 12, width: 120, textTransform: "capitalize", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+      <span style={{ color: "#9a9a95", fontSize: 14, width: 120, textTransform: "capitalize", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
         {skills}
       </span>
       <PriorityBadge priority={order.priority} />
@@ -215,7 +215,7 @@ const layout: CSSProperties = {
   alignItems: "start",
 };
 const infoBar: CSSProperties = {
-  fontSize: 13,
+  fontSize: 15,
   color: colors.textMuted,
   background: colors.surface,
   border: `1px solid ${colors.border}`,
@@ -275,7 +275,7 @@ const selectedBox: CSSProperties = {
   borderRadius: radius.md,
 };
 const warnBox: CSSProperties = {
-  fontSize: 12,
+  fontSize: 14,
   padding: "11px 14px",
   border: `1px dashed ${colors.ink}`,
   borderRadius: radius.md,
@@ -290,7 +290,7 @@ function optimizeBtn(enabled: boolean): CSSProperties {
     borderRadius: radius.lg,
     background: colors.ink,
     color: colors.inkOnDark,
-    fontSize: 15,
+    fontSize: 17,
     fontWeight: 700,
     cursor: enabled ? "pointer" : "default",
     opacity: enabled ? 1 : 0.4,
@@ -304,7 +304,7 @@ const clearBtn: CSSProperties = {
   background: "none",
   border: "none",
   color: "#a0a09a",
-  fontSize: 12,
+  fontSize: 14,
   cursor: "pointer",
 };
 const smallDark: CSSProperties = {
