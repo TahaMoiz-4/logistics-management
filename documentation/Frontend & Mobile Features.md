@@ -42,8 +42,8 @@ _(Fill in: a short paragraph on what the two surfaces are for and who uses each.
 
 | Surface       | Primary users                     | Purpose                          |
 |---------------|-----------------------------------|----------------------------------|
-| Web console   | _(fill in — e.g. dispatchers)_    | _(fill in)_                      |
-| Mobile app    | _(fill in — e.g. field workers)_  | _(fill in)_                      |
+| Web console   | _Dispatchers / System Admins_    | _(fill in)_                      |
+| Mobile app    | _Field workers: NUrses, Technicians, Drivers_  | _(fill in)_                      |
 
 ---
 
