@@ -1,194 +1,144 @@
-# Nightingale — Frontend & Mobile App Features
+# Nightingale — Frontend & Mobile Features
 
-> A feature reference for the two user-facing surfaces of Nightingale: the **web admin
-> console** (dispatchers / operators / admins) and the **mobile app** (field workers and
-> drivers). This document describes *what each surface does* from a user's perspective —
-> the screens, the actions available on them, and how they fit together.
->
-> **Template note:** This is a scaffold. Fill in the bullet points under each screen/section
-> below. Keep entries short and user-facing ("what can someone do here / what does it show").
-> Delete this note and any `_TODO_` / `_(fill in)_` placeholders once populated.
+> **What this doc is:** a plain-language walkthrough of everything a person can actually
+> do in Nightingale's two apps — the **web console** (used by dispatchers/admins in the
+> office) and the **mobile app** (used by nurses, technicians, and drivers out in the
+> field). No code, no jargon — just what each screen shows and what you can click.
 
 ---
 
-## Table of Contents
+## Web Console (Frontend)
 
-1. [Overview](#1-overview)
-2. [Frontend — Web Admin Console](#2-frontend--web-admin-console)
-   - 2.1 [Authentication & Login](#21-authentication--login)
-   - 2.2 [Dashboard](#22-dashboard)
-   - 2.3 [Orders](#23-orders)
-   - 2.4 [Route Plans](#24-route-plans)
-   - 2.5 [Live Tracking](#25-live-tracking)
-   - 2.6 [Workers](#26-workers)
-   - 2.7 [Fleet](#27-fleet)
-   - 2.8 [Cross-Cutting UI](#28-cross-cutting-ui)
-3. [Mobile App — Field Worker Companion](#3-mobile-app--field-worker-companion)
-   - 3.1 [Authentication & Session](#31-authentication--session)
-   - 3.2 [Home / Today's Work](#32-home--todays-work)
-   - 3.3 [Job / Order Details](#33-job--order-details)
-   - 3.4 [Navigation & Live Location](#34-navigation--live-location)
-   - 3.5 [Order History](#35-order-history)
-   - 3.6 [Profile & Ratings](#36-profile--ratings)
-   - 3.7 [Notifications](#37-notifications)
-4. [Shared Concepts](#4-shared-concepts)
-5. [Legend](#5-legend)
+The web console is what a dispatcher or admin uses at a desk to manage the day: see what's
+going on, add new orders, build routes, and keep an eye on staff in the field.
 
----
+### Login
 
-## 1. Overview
+The entry point to the console. A dispatcher/admin signs in with a username and password to
+get into the system.
 
-_(Fill in: a short paragraph on what the two surfaces are for and who uses each.)_
+### Dashboard
 
-| Surface       | Primary users                     | Purpose                          |
-|---------------|-----------------------------------|----------------------------------|
-| Web console   | _Dispatchers / System Admins_    | _(fill in)_                      |
-| Mobile app    | _Field workers: NUrses, Technicians, Drivers_  | _(fill in)_                      |
+The "home page" — a snapshot of how today is going, at a glance. It shows:
 
----
+- **Delivered orders** — how many of today's orders are already done.
+- **Today's schedule** — how many orders are on the books for today.
+- **Available nurses** — how many field workers are currently available to be given work.
+- **Order statuses** — a breakdown of where all of today's orders stand (pending, assigned,
+  in transit, delivered, failed).
+- **Today's route plans** — how many route plans exist for today and what state they're in
+  (draft, optimizing, ready, dispatched, completed).
+- **Create a new route** — a shortcut button that jumps straight into building a new route
+  plan, so a dispatcher doesn't have to go hunting for it.
 
-## 2. Frontend — Web Admin Console
+Think of the Dashboard as the "is everything on track?" screen — it doesn't let you edit
+anything, it just tells you the state of the day.
 
-The web console source lives under [frontend/src/](../frontend/src/); each screen below maps
-to a page under [frontend/src/pages/](../frontend/src/pages/).
+### Orders
 
-### 2.1 Authentication & Login
+This is the **only page where new records are actually typed in by hand**. Every other page
+in the console (Fleet, Workers, etc.) just shows lists of things that were already set up —
+Orders is where a dispatcher creates new work for the system to handle.
 
-_Source: [frontend/src/pages/LoginPage.tsx](../frontend/src/pages/LoginPage.tsx)_
+- View every order, with filters by status (pending, assigned, in transit, delivered, failed).
+- Add a brand-new order: who it's for, where it needs to happen, what skills it needs, what
+  time window it should happen in, and so on.
 
-- _(fill in)_
+Once orders exist here, they become available to be picked up by a route plan.
 
-### 2.2 Dashboard
+### Route Plans
 
-_Source: [frontend/src/pages/dashboard/](../frontend/src/pages/dashboard/)_
+This is where the "magic" of the system happens — turning a pile of orders into an actual
+plan of who goes where, in what order, and who drives them there. It's not a single page so
+much as a small area with a few connected screens:
 
-**Overview**
+- **Plans list** — every route plan that's ever been created, with its date, status, and
+  a quick summary (how many orders, how many routes, how many couldn't be scheduled).
+- **Create a new plan** — a dispatcher picks which orders to schedule (all from the same
+  day) and hits go. This is what the Dashboard's "create a new route" shortcut also leads to.
+- **Live solving view** — once a plan is kicked off, the optimizing engine (ALNS) runs and
+  this screen shows it working in real time: a live-updating chart of the solution getting
+  better, plus a simple progress tracker ("loading data → optimizing → saving → done").
+  Think of it like a progress bar that also shows its work.
+  - *Note: ALNS is the name of the optimization engine — the "planning brain" that decides
+    which worker goes to which job and which driver shuttles them there, trying to find the
+    most efficient combination possible.*
+- **Plan detail (the finished result)** — once solving is done, this shows the actual plan
+  on a map: each driver's route, which worker is doing which job, and any orders that
+  couldn't be fit in (with a heads-up so the dispatcher knows). From here, a dispatcher can
+  hit **Approve**, which locks the plan in and sends the jobs out to the relevant workers'
+  phones.
+- **Diagnostics ("solver internals")** — a behind-the-scenes report card on how well the
+  optimizer did: how long it took, how much it improved the plan, a cost breakdown (travel,
+  fuel, lateness, etc.), and which of its strategies worked best. This is more of a "trust
+  but verify" screen for someone curious about *why* the plan looks the way it does — not
+  something a dispatcher needs to check every day.
 
-- _(fill in — what the dashboard is for)_
+### Live Tracking
 
-**Widgets & metrics**
+A live map showing where every field worker and vehicle currently is, based on GPS pings
+sent from the mobile app. Dispatchers use this to see, in real time, who's out on the road
+and whether anyone's location data has gone stale (hasn't updated recently). It also shows
+a roster of who's marked themselves available vs. unavailable, and why.
 
-- _(fill in)_
+### Fleet
 
-### 2.3 Orders
+A set of read-only lists covering everything the company owns or contracts for transport:
 
-_Source: [frontend/src/pages/orders/](../frontend/src/pages/orders/)_
+- **Vehicles** — the cars/vans/bikes/trucks in the fleet.
+- **Drivers** — the people who drive them.
+- **Depots** — the home bases vehicles and routes start/end from.
 
-**Orders list**
+This page is for reference/lookup only — nothing here is created or edited from the console
+today.
 
-- _(fill in)_
+### Workers
 
-**Create a new order**
-
-- _(fill in)_
-
-### 2.4 Route Plans
-
-_Source: [frontend/src/pages/plans/](../frontend/src/pages/plans/)_
-
-**Plans list**
-
-- _(fill in)_
-
-**Create a new plan**
-
-- _(fill in)_
-
-**Plan detail**
-
-- _(fill in)_
-
-**Live plan view**
-
-- _(fill in)_
-
-**Diagnostics**
-
-- _(fill in)_
-
-### 2.5 Live Tracking
-
-_Source: [frontend/src/pages/tracking/](../frontend/src/pages/tracking/)_
-
-- _(fill in)_
-
-### 2.6 Workers
-
-_Source: [frontend/src/pages/workers/](../frontend/src/pages/workers/)_
-
-- _(fill in)_
-
-### 2.7 Fleet
-
-_Source: [frontend/src/pages/fleet/](../frontend/src/pages/fleet/)_
-
-- _(fill in)_
-
-### 2.8 Cross-Cutting UI
-
-Features and behaviors that apply across multiple screens (navigation, theming, maps,
-real-time updates, etc.).
-
-- _(fill in)_
+A read-only list of field staff (nurses or technicians, depending on the company), showing
+their skills, current status (active/unavailable), shift hours, and contact info. Like
+Fleet, this is a viewing page — workers are added to the system elsewhere (seeded data for
+now).
 
 ---
 
-## 3. Mobile App — Field Worker Companion
+## Mobile App
 
-The mobile app is the field-facing surface used by drivers and workers on the job.
+The mobile app is what nurses, technicians, and drivers use out in the field on their phones.
+It's a much smaller, focused experience — see your jobs, do your jobs, and let the office
+know where you are.
 
-### 3.1 Authentication & Session
+### Login
 
-- _(fill in)_
+A field worker signs in with their own username and password — separate from the web
+console's login, since it's a different type of account (field staff vs. office staff).
 
-### 3.2 Home / Today's Work
+### Home (Orders List)
 
-- _(fill in)_
+The main screen after logging in — a list of the jobs assigned to that worker for the day.
+From here they can:
 
-### 3.3 Job / Order Details
+- Tap any order to open its **details**.
+- Tap **Start Shift** to begin sending their live location to the server — this is exactly
+  what powers the dot that shows up for them on the web console's Live Tracking map. Until
+  a worker starts their shift, the office can't see where they are.
+- Tap **End Shift** to stop sending their location.
+- Tap the **exit/logout icon** to sign out of the app.
 
-- _(fill in)_
+### Order Details
 
-### 3.4 Navigation & Live Location
+Opened by tapping an order from the Home list. Shows the specifics of that job. From here, a
+worker can:
 
-- _(fill in)_
+- Tap **View Route** to see, on a map, the route from the depot to that order's location —
+  so they know how they're getting there and where it is.
+- Mark the order as **Complete** once the job is done.
 
-### 3.5 Order History
+### Availability Toggle
 
-- _(fill in)_
-
-### 3.6 Profile & Ratings
-
-- _(fill in)_
-
-### 3.7 Notifications
-
-- _(fill in)_
-
----
-
-## 4. Shared Concepts
-
-Concepts that show up on both surfaces and are worth defining once (e.g. what a *route plan*
-is, what a *job/order* is, what the worker statuses mean).
-
-- **_(term)_** — _(fill in)_
-- **_(term)_** — _(fill in)_
+Reached by tapping the **person icon**. This lets a worker mark themselves as **available**
+or **unavailable** for new work. If they mark themselves unavailable, they're asked for a
+short reason before confirming — though in the current demo-ready version, that reason can
+be left blank if the worker doesn't want to type one. This is the same status a dispatcher
+sees on the web console's Live Tracking roster.
 
 ---
-
-## 5. Legend
-
-Optional status markers you can use next to any feature while filling this in — delete this
-section if you don't need it.
-
-| Marker        | Meaning                                  |
-|---------------|------------------------------------------|
-| ✅ Done        | Implemented and working                  |
-| 🚧 In progress | Partially built                          |
-| 📋 Planned     | Designed / intended, not yet built       |
-
----
-
-*Fill in the bullets above. Keep descriptions user-facing and concise; link to source files
-only where it genuinely helps a reader locate the screen.*

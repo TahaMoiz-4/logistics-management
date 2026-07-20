@@ -22,8 +22,9 @@
    - 1.6 [Worker Lifecycle & Ratings](#16-worker-lifecycle--ratings)
    - 1.7 [Geocoding & Location Input](#17-geocoding--location-input)
    - 1.8 [Live Tracking Transport](#18-live-tracking-transport)
-   - 1.9 [API Surface & Performance Concerns](#19-api-surface--performance-concerns)
-   - 1.10 [Migrations](#110-migrations)
+   - 1.9 [Location-Based Job Status Updates](#19-location-based-job-status-updates)
+   - 1.10 [API Surface & Performance Concerns](#110-api-surface--performance-concerns)
+   - 1.11 [Migrations](#111-migrations)
 2. [Frontend](#2-frontend)
 3. [Mobile App](#3-mobile-app)
 4. [ALNS Routing Algorithm](#4-alns-routing-algorithm)
@@ -167,7 +168,47 @@ Backend source lives under [src/](../src/). Database models are in
   more efficient and near-real-time but adds connection-management complexity. We should pick
   one deliberately rather than defaulting.
 
-### 1.9 API Surface & Performance Concerns
+### 1.9 Location-Based Job Status Updates
+
+- **Auto-update in-between job statuses from GPS, with a policy for how eager to be.**
+  Right now a worker's job status (*en route → arrived → in progress → completed*, see the
+  mobile section) only changes when the worker taps something in the app. A worker's live
+  GPS location (when it's available and fresh, not a stale ping — see section 1.8 on
+  staleness) could be used to *infer* these transitions automatically: e.g. arriving within
+  some radius of the order's location could auto-set the stop to "arrived" without the
+  worker touching their phone.
+
+  This needs a deliberate **policy decision** on how eager the automatic updater should be,
+  because GPS can be wrong, delayed, or missing (connectivity gaps, app backgrounded, phone
+  issues). Two ends of a spectrum:
+  1. **Eager** — the automatic updater sets the status as soon as location suggests
+     something happened, even before the worker confirms it themselves.
+  2. **Patient** — wait for the worker to confirm manually; only step in and set the status
+     itself after a configurable grace period (e.g. X minutes) if they haven't.
+
+  Whichever policy is chosen, the system needs to track **who or what made each status
+  change** — a real person tapping "arrived" in the app is a different kind of event than
+  the system inferring it from a GPS ping, and both matter for different reasons (see the
+  audit trail item below).
+
+- **Audit trail for status changes — don't overwrite "who updated this."**
+  A single "last updated by" field isn't enough once status changes can come from two
+  sources (the worker, or the automatic location-based updater). Instead, each status change
+  should be recorded as its own entry — a small history/log per job stop — capturing things
+  like: the automatic updater decided to mark a stop "arrived" at a given time based on
+  location, and separately, whether/when the worker actually confirmed it, or whether the
+  automatic updater ended up setting it itself after the grace period expired because the
+  worker never did.
+
+  This audit trail serves two distinct purposes:
+  1. **Accuracy check** — confirms whether the automatic, location-based updates are actually
+     correctly identifying what's happening in the field (a way to validate the feature
+     itself over time).
+  2. **Worker accountability** — surfaces cases where a worker is consistently slow or
+     failing to update their own job status manually, which is useful operational signal on
+     its own, separate from whether the automation is doing its job.
+
+### 1.10 API Surface & Performance Concerns
 
 - **Investigate excessive `GET` calls on the route-plans API.**
   The route-plans endpoints appear to be called far more than expected. We need to find the
@@ -183,7 +224,7 @@ Backend source lives under [src/](../src/). Database models are in
   There's no general search across entities (orders, workers, plans, etc.). Needed for the
   console to remain usable as data volume grows.
 
-### 1.10 Migrations
+### 1.11 Migrations
 
 - **Resolve isolated / multiple Alembic heads.**
   The Alembic migration history has branched into isolated heads. Multiple heads mean
@@ -220,6 +261,12 @@ Frontend source lives under [frontend/src/](../frontend/src/), with route pages 
   Fix layout/sizing issues that appear across different screen sizes and resolutions — some
   views don't scale cleanly yet.
 
+- **Live Tracking map: zoom controls overlap the live-status pill.**
+  On the [Live Tracking](../frontend/src/pages/tracking/) map, the "● live · polling 3s"
+  status pill sits directly on top of the map's zoom in/out (+/−) buttons in the corner,
+  making them hard or impossible to click. Needs a layout fix — move the pill or reposition
+  the zoom controls so neither overlaps the other.
+
 ---
 
 ## 3. Mobile App
@@ -229,6 +276,12 @@ The mobile app is the field-facing companion for drivers/workers.
 - **Attendance feature.**
   Let workers clock in/out or mark presence from the app — feeds into scheduling and
   availability.
+
+- **Surface in-between job statuses.**
+  The backend already supports tracking a job through finer-grained states — *en route*,
+  *arrived*, *in progress* — before it's marked complete, but the mobile app currently only
+  exposes a single **Complete** action. Adding these intermediate taps would give dispatchers
+  real visibility into where a worker actually is in a job, not just done-or-not-done.
 
 - **Past order history.**
   Give workers a view of the jobs/orders they've previously completed.
