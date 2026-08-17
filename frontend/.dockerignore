@@ -1,0 +1,12 @@
+# node_modules must never enter the build context: it is large, and it may hold
+# binaries built for the host OS rather than the Alpine builder image. `npm ci`
+# installs a clean tree from package-lock.json inside the container instead.
+node_modules/
+dist/
+.env
+.env.*
+*.log
+.vscode/
+.idea/
+Dockerfile
+.dockerignore

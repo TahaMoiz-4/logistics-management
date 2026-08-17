@@ -1,3 +1,15 @@
+# Nightingale stack.
+#
+#   docker compose up -d --build        start everything (postgres, redis, api, ui)
+#   docker compose logs -f backend      follow API logs
+#   docker compose down                 stop (data survives - it's on bind mounts)
+#
+# One-time on a fresh box, after the stack is up:
+#   docker compose exec backend python -m src.utils.scripts.seed_demo_dataset
+#
+# Clients reach everything on port 80: nginx serves the console and proxies
+# /v1/* to the backend. The backend publishes no host port of its own.
+
 services:
 
   postgres:
@@ -24,8 +36,12 @@ services:
     image: redis:7
     container_name: redis_cache
     restart: unless-stopped
-    ports:
-      - "6379:6379"
+    # No host port. Only the backend talks to Redis, over app-network on the
+    # container port - publishing 6379 would expose an unauthenticated Redis to
+    # anything that can reach the VM. Uncomment only for local redis-cli poking
+    # (and note another project may already hold 6379 on your machine).
+    # ports:
+    #   - "6379:6379"
     volumes:
       - ./redis-data:/data          
     command: redis-server --appendonly yes
@@ -34,6 +50,87 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: nightingale-backend:latest
+    container_name: nightingale_api
+    restart: unless-stopped
+
+    # .env supplies SECRET_KEY and the Firebase project id. It is NOT baked into
+    # the image (.dockerignore excludes it) - compose reads it from the host at
+    # start time.
+    env_file:
+      - .env
+
+    # These override anything in .env, because pydantic-settings ranks real
+    # environment variables above the env_file. That is the whole trick: the
+    # container gets container hostnames while .env keeps saying localhost, so
+    # ./start.sh still works unchanged for local development.
+    environment:
+      # postgres:5432, not localhost:5433. Inside the container "localhost" is
+      # the container itself; and 5433 is only the host-side mapping - services
+      # on app-network talk to Postgres on its real container port, 5432.
+      DATABASE_URL: postgresql://user:password@postgres:5432/LMS
+      REDIS_URL: redis://redis:6379/0
+      APP_ENV: production
+      DB_ECHO: "false"
+      # Path *inside* the container - see the read-only mount below.
+      FIREBASE_CREDENTIALS_PATH: /run/secrets/firebase/nightingale-d1c23-firebase-adminsdk-fbsvc-98cd4eb584.json
+      # Must stay 1 until src/api/v1/progress.py uses Redis pub/sub instead of
+      # an in-process dict - see the note in docker-entrypoint.sh. More workers
+      # break the live solver stream intermittently.
+      UVICORN_WORKERS: "1"
+
+    volumes:
+      # Secrets stay on the host and are attached read-only at runtime, so the
+      # service-account key never becomes part of an image layer. Mounting the
+      # directory (not one file) means rotating the credential is a file swap
+      # plus an env var change - no compose surgery.
+      - ./src/secrets:/run/secrets/firebase:ro
+
+      # Persist across container recreation, same style as ./postgres-data.
+      # cache/ is the 46MB OSMnx download cache (src/services/maps.py sets
+      # cache_folder="./cache"); losing it means re-hitting the OSM API.
+      - ./cache:/app/cache
+      - ./logs:/app/logs
+      - ./map_cache:/app/map_cache
+
+    depends_on:
+      # `service_healthy`, not just `service_started`. Postgres accepts a TCP
+      # connection seconds before it is ready to serve queries, so plain
+      # depends_on would let alembic run too early and crash the container.
+      # Both services already define the healthchecks this relies on.
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+    # No `ports:` on purpose - the API is reachable only through nginx.
+    # Uncomment to hit the backend directly while debugging:
+    # ports:
+    #   - "8000:8000"
+
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: nightingale-frontend:latest
+    container_name: nightingale_web
+    restart: unless-stopped
+    ports:
+      # The stack's only public entrypoint. Open port 80 in the GCP firewall.
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_healthy
     networks:
       - app-network
 

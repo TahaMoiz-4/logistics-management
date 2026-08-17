@@ -23,6 +23,21 @@ class Settings(BaseSettings):
     # ── App ───────────────────────────────────────────────────────────────
     APP_ENV: str = "development"   # development | production
     SECRET_KEY: str = "change-me-in-production"
+
+    # ── CORS ──────────────────────────────────────────────────────────────
+    # Browser origins allowed to call this API, comma-separated in .env:
+    #   CORS_ORIGINS=http://localhost:5173,https://demo.example.com
+    #
+    # Under docker compose the console is served by nginx on the same origin as
+    # the API (nginx proxies /v1 -> backend), so same-origin requests never hit
+    # CORS at all. This list is for genuinely cross-origin callers: a local Vite
+    # dev server on :5173, or a console hosted elsewhere.
+    CORS_ORIGINS: str = "http://localhost:5173,http://127.0.0.1:5173"
+
+    @property
+    def cors_origins_list(self) -> list[str]:
+        """CORS_ORIGINS parsed into the list CORSMiddleware expects."""
+        return [o.strip() for o in self.CORS_ORIGINS.split(",") if o.strip()]
     
     # ── Matrix builder ─────────────────────────────────────────────────────
     # Returned for unreachable pairs — large enough that OR-Tools avoids them

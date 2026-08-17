@@ -1,0 +1,149 @@
+name: Deploy to staging VM
+
+# Every push to `staging` redeploys the demo box. Merge development -> staging
+# when you want the client demo updated; the push IS the deploy.
+#
+# workflow_dispatch also lets you redeploy the current staging commit by hand
+# from the Actions tab (useful after changing .env on the VM, which needs a
+# restart to take effect but has no commit attached to it).
+on:
+  push:
+    branches: [staging]
+  workflow_dispatch:
+
+# If you push twice quickly, cancel the older run rather than letting two
+# deploys fight over the same VM - `docker compose up` is not safe to run
+# concurrently against itself.
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build and deploy on VM
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Set up SSH key
+        # The private key lives in repo secrets; the matching public key is in
+        # the VM's ~/.ssh/authorized_keys. ssh-keyscan pins the host key so the
+        # connection cannot be silently intercepted (and so ssh does not hang
+        # on an interactive "unknown host" prompt).
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VM_SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "${{ secrets.VM_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Deploy
+        env:
+          VM_HOST: ${{ secrets.VM_HOST }}
+          VM_USER: ${{ secrets.VM_USER }}
+          APP_DIR: ${{ secrets.VM_APP_DIR }}
+          # Personal access token, used only for `git pull` on the private repo.
+          GIT_TOKEN: ${{ secrets.GH_PAT }}
+          GIT_REPO: ${{ github.repository }}
+        run: |
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes \
+              "$VM_USER@$VM_HOST" \
+              APP_DIR="$APP_DIR" GIT_TOKEN="$GIT_TOKEN" GIT_REPO="$GIT_REPO" \
+              'bash -s' <<'REMOTE'
+          set -euo pipefail
+
+          cd "$APP_DIR"
+
+          echo "==> Pulling staging"
+          # The token is injected into the remote URL for this one command and
+          # never written to disk - `git remote set-url` would persist it in
+          # .git/config in plaintext.
+          git fetch --prune \
+            "https://x-access-token:${GIT_TOKEN}@github.com/${GIT_REPO}.git" \
+            staging
+          git checkout staging 2>/dev/null || git checkout -b staging FETCH_HEAD
+          git reset --hard FETCH_HEAD
+          echo "    now at $(git rev-parse --short HEAD) - $(git log -1 --pretty=%s)"
+
+          echo "==> Sanity: deploy-time files must exist on the VM"
+          # These are deliberately not in git. Failing here with a clear message
+          # beats a container that boots and then dies on a missing DATABASE_URL.
+          [ -f .env ] || { echo "ERR .env missing in $APP_DIR"; exit 1; }
+          ls src/secrets/*.json >/dev/null 2>&1 \
+            || echo "    WARN no src/secrets/*.json - FCM push will run in stub mode"
+
+          echo "==> Building images on the VM"
+          docker compose build
+
+          echo "==> Recreating changed services"
+          # `up -d --build` replaces only services whose image or config changed.
+          # postgres and redis keep running, so their data is never at risk -
+          # unlike `down`, which is one stray flag away from removing volumes.
+          # The backend entrypoint runs `alembic upgrade head` as it starts.
+          docker compose up -d --build --remove-orphans
+
+          echo "==> Waiting for containers to report healthy"
+          for i in $(seq 1 60); do
+            unhealthy=$(docker compose ps --format '{{.Name}} {{.Health}}' \
+                        | grep -v ' healthy$' || true)
+            [ -z "$unhealthy" ] && { echo "    all healthy"; break; }
+            [ "$i" = "60" ] && { echo "ERR not healthy in time:"; echo "$unhealthy"; exit 1; }
+            sleep 2
+          done
+
+          echo "==> Pruning dangling images"
+          # Each deploy leaves the previous image untagged. Without this the
+          # disk fills up after a few dozen deploys - these images are ~1.1GB.
+          docker image prune -f >/dev/null
+          REMOTE
+
+      - name: Smoke test
+        env:
+          VM_HOST: ${{ secrets.VM_HOST }}
+          VM_USER: ${{ secrets.VM_USER }}
+        run: |
+          ssh -i ~/.ssh/deploy_key "$VM_USER@$VM_HOST" 'bash -s' <<'REMOTE'
+          set -euo pipefail
+
+          # Tests through nginx on :80, not the backend directly - that is the
+          # path a real client takes, so it also proves the proxy is wired up.
+          echo "==> GET /openapi.json (API alive, proxied)"
+          # `|| true` so a connection refusal (curl exits non-zero, prints 000)
+          # is reported by the check below rather than killing the script via
+          # `set -e` with no message.
+          code=$(curl -s -o /tmp/openapi.json -w '%{http_code}' --max-time 15 http://127.0.0.1/openapi.json || true)
+          [ "$code" = "200" ] || { echo "ERR openapi.json returned ${code:-no response}"; exit 1; }
+          # A 200 from nginx's error page would still be a failure, so confirm
+          # it is really the FastAPI schema.
+          grep -q '"openapi"' /tmp/openapi.json || { echo "ERR not an OpenAPI doc"; exit 1; }
+          echo "    OK"
+
+          echo "==> GET / (console served)"
+          code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 http://127.0.0.1/ || true)
+          [ "$code" = "200" ] || { echo "ERR console returned ${code:-no response}"; exit 1; }
+          echo "    OK"
+          REMOTE
+
+      - name: Container logs
+        # `always()` so logs appear when the deploy FAILS - which is exactly when
+        # they matter. Without it this step is skipped on failure and you are
+        # left SSHing in to find out why.
+        if: always()
+        env:
+          VM_HOST: ${{ secrets.VM_HOST }}
+          VM_USER: ${{ secrets.VM_USER }}
+          APP_DIR: ${{ secrets.VM_APP_DIR }}
+        run: |
+          ssh -i ~/.ssh/deploy_key "$VM_USER@$VM_HOST" \
+              APP_DIR="$APP_DIR" 'bash -s' <<'REMOTE'
+          cd "$APP_DIR"
+          echo "===================== docker compose ps ====================="
+          docker compose ps
+          echo "===================== backend logs =========================="
+          docker compose logs --tail=60 --no-color backend 2>&1 || true
+          echo "===================== frontend logs ========================="
+          docker compose logs --tail=20 --no-color frontend 2>&1 || true
+          REMOTE
+
+      - name: Clean up SSH key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key

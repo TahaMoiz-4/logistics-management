@@ -15,6 +15,7 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from src.core.config import settings
 from src.db.database import check_db_connection
 from src.api.v1.auth import router as auth_router
 from src.api.v1.route_plans import router as route_plans_router
@@ -40,10 +41,23 @@ app = FastAPI(
     version="0.1.0",
 )
 
-# CORS wide-open for the demo frontend (tighten for production).
+# ── CORS ─────────────────────────────────────────────────────────────────────
+# Behind docker compose, nginx serves the console and proxies /v1 to this app,
+# so console traffic is same-origin and never triggers CORS. What remains is
+# genuinely cross-origin callers: a local Vite dev server on :5173, the mobile
+# app, or a console hosted on another domain.
+#
+# settings.cors_origins_list (src/core/config.py) parses the comma-separated
+# CORS_ORIGINS env var into a list, defaulting to the two localhost:5173 forms.
+#
+# An explicit origin list is what makes allow_credentials=True valid: browsers
+# reject Access-Control-Allow-Origin: * on credentialed requests, so the old
+# allow_origins=["*"] pairing was permissive-looking and broken at once.
+# Methods/headers stay open - an untrusted origin cannot reach the endpoint to
+# use them.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.cors_origins_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

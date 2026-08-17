@@ -1,0 +1,62 @@
+# Build context exclusions.
+#
+# Two jobs here:
+#   1. Speed/size  - keep the 46MB OSM cache, the venv and the DB volumes out of
+#                    the context that gets shipped to the Docker daemon.
+#   2. Secrets     - .env and src/secrets/ must never enter an image layer.
+#                    Excluding them here is stronger than deleting them in a
+#                    later RUN: a deleted file still exists in the earlier layer.
+#
+# Both are supplied at runtime instead - see the `backend` service in
+# docker-compose.yaml (env vars + a read-only bind mount for the Firebase JSON).
+
+# ── Secrets (never bake these in) ────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+src/secrets/
+secrets/
+
+# ── Python ───────────────────────────────────────────────────────────────────
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ── Runtime data & caches (bind-mounted at runtime, not baked) ───────────────
+postgres-data/
+redis-data/
+cache/
+map_cache/
+logs/
+*.log
+
+# ── Frontend (has its own build context; node_modules never ships) ───────────
+frontend/node_modules/
+frontend/dist/
+
+# ── Repo/tooling noise ───────────────────────────────────────────────────────
+.git/
+.gitignore
+.github/
+.claude/
+.vscode/
+.idea/
+
+# ── Docs & local dev helpers not needed by the app ───────────────────────────
+documentation/
+deploy/
+tests/
+README.md
+start.sh
+start.ps1
+test.py
+my_database_erd
+my_database_erd.svg
+Dockerfile
+.dockerignore
+docker-compose.yaml
+docker-compose.*.yml
