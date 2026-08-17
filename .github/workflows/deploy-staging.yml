@@ -100,25 +100,37 @@ jobs:
         env:
           VM_HOST: ${{ secrets.VM_HOST }}
           VM_USER: ${{ secrets.VM_USER }}
+          APP_DIR: ${{ secrets.VM_APP_DIR }}
         run: |
-          ssh -i ~/.ssh/deploy_key "$VM_USER@$VM_HOST" 'bash -s' <<'REMOTE'
+          ssh -i ~/.ssh/deploy_key "$VM_USER@$VM_HOST" \
+              APP_DIR="$APP_DIR" 'bash -s' <<'REMOTE'
           set -euo pipefail
+          cd "$APP_DIR"
 
-          # Tests through nginx on :80, not the backend directly - that is the
-          # path a real client takes, so it also proves the proxy is wired up.
+          # Read the published port from the same .env compose uses, so this
+          # test follows the port rather than assuming one. On a shared VM with
+          # a dozen projects, a hardcoded :80 would silently test SOMEONE
+          # ELSE'S service and report a green deploy.
+          WEB_PORT=$(grep -E '^WEB_PORT=' .env 2>/dev/null | cut -d= -f2 | tr -d '"'"'"' ' || true)
+          WEB_PORT="${WEB_PORT:-8030}"
+          echo "==> smoke testing http://127.0.0.1:${WEB_PORT}"
+
+          # Goes through nginx, not the backend directly - that is the path a
+          # real client takes, so it also proves the proxy is wired up.
           echo "==> GET /openapi.json (API alive, proxied)"
           # `|| true` so a connection refusal (curl exits non-zero, prints 000)
           # is reported by the check below rather than killing the script via
           # `set -e` with no message.
-          code=$(curl -s -o /tmp/openapi.json -w '%{http_code}' --max-time 15 http://127.0.0.1/openapi.json || true)
+          code=$(curl -s -o /tmp/openapi.json -w '%{http_code}' --max-time 15 "http://127.0.0.1:${WEB_PORT}/openapi.json" || true)
           [ "$code" = "200" ] || { echo "ERR openapi.json returned ${code:-no response}"; exit 1; }
-          # A 200 from nginx's error page would still be a failure, so confirm
-          # it is really the FastAPI schema.
+          # A 200 from some other service's index page would still be a failure,
+          # so confirm it is really OUR FastAPI schema.
           grep -q '"openapi"' /tmp/openapi.json || { echo "ERR not an OpenAPI doc"; exit 1; }
+          grep -q 'ALNS Routing' /tmp/openapi.json || { echo "ERR wrong API on this port"; exit 1; }
           echo "    OK"
 
           echo "==> GET / (console served)"
-          code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 http://127.0.0.1/ || true)
+          code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 "http://127.0.0.1:${WEB_PORT}/" || true)
           [ "$code" = "200" ] || { echo "ERR console returned ${code:-no response}"; exit 1; }
           echo "    OK"
           REMOTE

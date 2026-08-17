@@ -20,8 +20,17 @@ services:
       POSTGRES_DB: LMS
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
-    ports:
-      - "5433:5432"
+    # No host port. The backend reaches Postgres over app-network on 5432 (see
+    # DATABASE_URL below), so nothing here needs a mapping - and publishing one
+    # on a shared VM both collides with whatever else is running and exposes the
+    # default user/password credentials.
+    #
+    # To poke at the database, get a shell on it instead of reopening this:
+    #   docker compose exec postgres psql -U user -d LMS
+    #
+    # Locally, uncomment if you want direct access and 5433 is free:
+    # ports:
+    #   - "5433:5432"
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
     healthcheck:
@@ -126,8 +135,14 @@ services:
     container_name: nightingale_web
     restart: unless-stopped
     ports:
-      # The stack's only public entrypoint. Open port 80 in the GCP firewall.
-      - "80:80"
+      # The stack's only public entrypoint. Host port is configurable because
+      # the demo VM is shared: a host nginx already owns :80/:8080/:8099 and a
+      # dozen other projects sit on 8001-8020 and 8090. 8030 is clear of both
+      # clusters. Override per host with WEB_PORT in .env if it ever collides.
+      #
+      # Whatever this is, it must match the scheme+host+port in CORS_ORIGINS
+      # and be open in the GCP firewall.
+      - "${WEB_PORT:-8030}:80"
     depends_on:
       backend:
         condition: service_healthy

@@ -83,9 +83,15 @@ SECRET_KEY=<paste the generated value>
 
 FIREBASE_PROJECT_ID=nightingale-d1c23
 
-# Your VM's external IP, with the scheme, no trailing slash. Origins are
-# matched as exact strings - http://1.2.3.4/ will NOT match http://1.2.3.4
-CORS_ORIGINS=http://YOUR_VM_IP
+# Your VM's external IP *with the published port*, no trailing slash. Origins
+# are matched as exact strings - http://1.2.3.4:8030/ will NOT match
+# http://1.2.3.4:8030
+CORS_ORIGINS=http://YOUR_VM_IP:8030
+
+# Host port for the console. The demo VM is shared: a host nginx owns :80,
+# :8080 and :8099, and other projects sit on 8001-8020 and 8090. Change this
+# only if 8030 is taken too - check with: sudo ss -tlnp | grep ':80'
+WEB_PORT=8030
 ```
 
 `DATABASE_URL` and `REDIS_URL` stay as-is: docker-compose overrides them with
@@ -168,20 +174,20 @@ Five secrets, names must match exactly:
 
 ```bash
 gcloud compute firewall-rules create allow-nightingale-http \
-  --allow=tcp:80 \
+  --allow=tcp:8030 \
   --source-ranges=0.0.0.0/0 \
   --description="Nightingale demo console"
 ```
 
-Port 80 is the only one that needs opening. The backend publishes no host port,
-and Redis publishes none either - both are reachable only inside the Docker
-network.
+`8030` (WEB_PORT) is the only port that needs opening - it is the stack's sole
+published port. The backend, Postgres and Redis publish nothing to the host;
+they are reachable only inside the Docker network.
 
-Postgres does still publish `5433`. It is bound on all interfaces, so **either**
-add a firewall rule restricting 5433 to your own IP, **or** comment out the
-`ports:` block under `postgres` in `docker-compose.yaml` if you never need a DB
-GUI against the demo box. Leaving it open to the internet with the default
-`user`/`password` credentials would be a real exposure.
+To reach the database, get a shell on it rather than publishing a port:
+
+```bash
+docker compose exec postgres psql -U user -d LMS
+```
 
 ---
 
@@ -200,7 +206,7 @@ automate it):
 docker compose exec backend python -m src.utils.scripts.seed_demo_dataset
 ```
 
-Open `http://YOUR_VM_IP` - log in as `admin1` / `password`.
+Open `http://YOUR_VM_IP:8030` - log in as `admin1` / `password`.
 
 ---
 
@@ -220,7 +226,11 @@ output, including when a deploy fails.
 ## Notes
 
 - **HTTP only.** No domain means no certificate; browsers show "Not secure".
-  Once you have a DNS name, add certbot and switch `CORS_ORIGINS` to `https://`.
+  Once you have a DNS name, the host nginx already on :80 can proxy to
+  `127.0.0.1:8030` and terminate TLS - that is how the other projects on this
+  VM are fronted. Then `CORS_ORIGINS` becomes `https://your.domain`.
+- **Shared VM.** Roughly a dozen projects run here. Before changing any host
+  port, check what is free: `sudo ss -tlnp | grep ':80'`
 - **Backups.** Postgres data lives in `~/nightingale/postgres-data`. Migrations
   run automatically on every deploy, so before a schema-changing release:
   `docker compose exec postgres pg_dump -U user LMS > ~/backup-$(date +%F).sql`
