@@ -5,8 +5,6 @@
 > what each screen contains (see [Frontend & Mobile Features.md](Frontend%20%26%20Mobile%20Features.md)
 > for that), but the order things happen in, and what the worker sees at each step.
 >
-> Screens are marked with `[Screenshot: ...]` placeholders — drop real screenshots in
-> wherever you see one.
 
 ---
 
@@ -43,7 +41,7 @@ during a real shift.
    your own field-worker login).
 3. On success, you land on the **Home** screen with today's assigned jobs.
 
-`[Screenshot: Mobile login screen]`
+![alt text](image-23.png)
 
 ---
 
@@ -65,8 +63,8 @@ Before heading out, a worker starts their shift so the office can see where they
 3. From this point on, a dispatcher watching the web console's **Live Tracking** page can
    see this worker moving on the map in real time.
 
-`[Screenshot: Home screen with "Start Shift" button, before tapping]`
-`[Screenshot: Home screen after shift started — button state changed]`
+![alt text](image-24.png)
+![alt text](image-26.png)
 
 ---
 
@@ -93,10 +91,11 @@ The main loop of the day: open a job, see where it is, go do it, mark it done.
 5. The app returns to the **Home** screen, and the completed job is no longer pending.
 6. Repeat for each job in the day's list.
 
-`[Screenshot: Home screen with orders list]`
-`[Screenshot: Order Details screen]`
-`[Screenshot: View Route map]`
-`[Screenshot: Complete confirmation / updated Home list]`
+![alt text](image-26.png)
+![alt text](image-28.png)
+![alt text](image-32.png)
+![alt text](image-30.png)
+![alt text](image-31.png)
 
 ---
 
@@ -123,9 +122,9 @@ availability — this immediately reflects on the dispatcher's roster on the web
 4. Tap **Confirm**. The change is immediate and shows up right away on the dispatcher's
    availability roster on the web console (see the web flow doc, Flow E).
 
-`[Screenshot: Availability screen — toggle in "available" state]`
-`[Screenshot: Availability screen — toggle set to "unavailable", reason field visible]`
-`[Screenshot: Confirmation after toggling]`
+![alt text](image-33.png)
+![alt text](image-34.png)
+![alt text](image-35.png)
 
 ---
 
@@ -144,8 +143,8 @@ availability — this immediately reflects on the dispatcher's roster on the web
    Tracking map.
 2. Tap the **exit icon** to log out of the app entirely, returning to the Login screen.
 
-`[Screenshot: Home screen with "End Shift" button]`
-`[Screenshot: exit/logout icon location on Home screen]`
+![alt text](image-31.png)
+![alt text](image-36.png)
 
 ---
 

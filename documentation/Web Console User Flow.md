@@ -5,8 +5,7 @@
 > (see [Frontend & Mobile Features.md](Frontend%20%26%20Mobile%20Features.md) for that), but
 > the *order* they'd click through things in, and what happens on screen at each step.
 >
-> Screens are marked with `[Screenshot: ...]` placeholders — drop real screenshots in
-> wherever you see one.
+
 
 ---
 
@@ -218,9 +217,10 @@ them move in real time.
    themselves unavailable on the app.
 
 ![alt text](image-14.png)
-`[Screenshot: Live Tracking map with dots]`
-`[Screenshot: selected-worker overlay card]`
-`[Screenshot: availability roster list]`
+![alt text](image-19.png)
+![alt text](image-20.png)
+![alt text](image-21.png)
+![alt text](image-22.png)
 
 ---
 
