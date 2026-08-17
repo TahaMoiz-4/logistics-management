@@ -12,8 +12,13 @@ Per company it seeds:
     contacts, skills, shifts, mobile logins (worker<emp_id> / "password")
   * 3 drivers (all male) each bound to 1 vehicle (Sindh-style plates)
   * 8 customers spread across real Karachi neighbourhoods (all on land)
-  * ~20 orders, all status=pending, 4-5 per day across 14-18 Jul 2026, with
-    within-day time windows and skill requirements matching the service type
+  * ~36 orders, all status=pending, 3-6 per day across the next 10 WORKING days
+    (weekends skipped), with within-day time windows and skill requirements
+    matching the service type
+
+Order dates are relative to the day you run this, so the route-plan picker -
+which only lists orders from today onward - always has data to show. Re-run it
+whenever the demo needs refreshing.
 
 It does NOT create any dynamic/solver data (route plans, assignments, position
 events) — those are produced live by the solver + mobile app during the demo.
@@ -253,12 +258,33 @@ def _seed_company(db, cid, name, service_type, admin_username):
         customers.append((cust, cust_loc, area))
     print(f"  8 customers across KHI")
 
-    # 5) Orders (~20), 4-5/day across 14-18 Jul 2026, all pending.
-    start = date(2026, 7, 14)
-    per_day = [5, 4, 4, 4, 3]  # = 20
+    # 5) Orders, spread over the next N working days, all pending.
+    #
+    # Dates are RELATIVE to today, not absolute. GET /v1/orders/servable - the
+    # route-plan order picker - only returns orders with
+    # service_date >= today (see OrderRepository.list_servable). A hardcoded
+    # window silently falls out of range once the calendar passes it: the orders
+    # still show on the orders page, but the picker comes up empty with no
+    # error anywhere.
+    #
+    # Starting tomorrow (not today) keeps every order genuinely schedulable -
+    # a same-day 09:00 window is already in the past if you demo after lunch.
+    start = date.today() + timedelta(days=1)
+    per_day = [5, 4, 4, 4, 3, 6, 4, 3, 4, 3]
     order_count = 0
+
+    # One service date per entry in per_day, skipping weekends. Note this cannot
+    # be `start + timedelta(days=d_idx)`: skipped Sat/Sun push later dates
+    # further out, so the loop index and the calendar offset diverge.
+    svc_dates = []
+    d = start
+    while len(svc_dates) < len(per_day):
+        if d.weekday() < 5:          # Mon-Fri (weekday(): Mon=0 .. Sun=6)
+            svc_dates.append(d)
+        d += timedelta(days=1)
+
     for d_idx, n in enumerate(per_day):
-        svc_date = start + timedelta(days=d_idx)
+        svc_date = svc_dates[d_idx]
         for _ in range(n):
             cust, cust_loc, area = random.choice(customers)
             # a within-day time window inside the 9-17 shift
@@ -291,7 +317,8 @@ def _seed_company(db, cid, name, service_type, admin_username):
                 status=OrderStatus.pending, created_by=1,
             ))
             order_count += 1
-    print(f"  {order_count} orders, 14-18 Jul 2026 (all pending)")
+    print(f"  {order_count} orders over {len(svc_dates)} working days, "
+          f"{svc_dates[0]:%a %d %b} - {svc_dates[-1]:%a %d %b %Y} (all pending)")
 
 
 def main():
