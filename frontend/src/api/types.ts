@@ -77,6 +77,35 @@ export interface Customer {
   order_count: number;
 }
 
+// ---------- geocoding ----------
+/** One suggestion from /v1/geocode/search. See src/services/photon.py. */
+export interface GeocodeResult {
+  /** Bold first line — the POI/street name, or "housenumber street". */
+  label: string;
+  /** Muted second line — street/locality/district. May be empty. */
+  context: string;
+  /** Flattened "label, context", persisted to Location.address_text. */
+  address_text: string;
+  lat: number;
+  lng: number;
+  type: string | null; // house | street | locality | district | city
+  osm_id: number | null;
+  osm_type: string | null;
+  postcode: string | null;
+  /**
+   * Whether the point sits near a drivable road. null means the backend could
+   * NOT check (road graph not loaded) — distinct from false, which means it
+   * checked and the place is outside the routable network.
+   */
+  routable: boolean | null;
+  snap_distance_m: number | null;
+}
+
+export interface GeocodeSearchOut {
+  query: string;
+  results: GeocodeResult[];
+}
+
 // ---------- orders ----------
 export interface Order {
   id: number;

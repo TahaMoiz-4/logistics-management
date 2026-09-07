@@ -13,6 +13,7 @@ import type {
   Depot,
   DiagnosticsOut,
   Driver,
+  GeocodeSearchOut,
   DriverRoute,
   LiveTrackingOut,
   LoginRequest,
@@ -44,6 +45,16 @@ export const dashboardApi = {
 
 export const metaApi = {
   enums: () => request<MetaEnums>("/v1/meta/enums"),
+};
+
+export const geocodeApi = {
+  /**
+   * Address autocomplete. Called on every (debounced) keystroke, so it takes an
+   * AbortSignal: without one, a slow response for "ask" can land after the
+   * response for "aska" and overwrite fresher results.
+   */
+  search: (q: string, signal?: AbortSignal) =>
+    request<GeocodeSearchOut>(`/v1/geocode/search?q=${encodeURIComponent(q)}`, { signal }),
 };
 
 export const trackingApi = {

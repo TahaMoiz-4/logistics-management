@@ -24,6 +24,34 @@ class Settings(BaseSettings):
     APP_ENV: str = "development"   # development | production
     SECRET_KEY: str = "change-me-in-production"
 
+    # ── Geocoding (Photon) ───────────────────────────────────────────────
+    # Public Komoot instance by default. It has no API key and no published
+    # quota — Komoot ask that you not bulk-geocode and self-host at volume, so
+    # /v1/geocode debounces on the client and caches responses in Redis.
+    # Point this at a self-hosted Photon to drop that constraint.
+    PHOTON_BASE_URL: str = "https://photon.komoot.io"
+    PHOTON_TIMEOUT_SEC: float = 4.0
+    # Suggestions returned per keystroke. Small on purpose: this is a dropdown,
+    # and the boundary filter below discards some of what Photon sends back.
+    GEOCODE_RESULT_LIMIT: int = 8
+    # Redis TTL for a cached search. Dispatchers in one city search the same
+    # neighbourhoods repeatedly, so the hit rate is high; OSM data barely moves
+    # within a day. Photon's own responses carry Cache-Control: max-age=3600.
+    GEOCODE_CACHE_TTL_SEC: int = 86_400
+
+    # ── Service area ─────────────────────────────────────────────────────
+    # THE place name for this deployment. src/services/maps.py builds the
+    # routing graph from it, and src/services/boundary.py derives the geocoder's
+    # bbox + polygon from the SAME name, so search can never offer a location
+    # the router cannot reach. Change this one value to move cities.
+    MAP_PLACE: str = "Karachi, Pakistan"
+
+    # How far a geocoded point may sit from the nearest drivable road before
+    # /v1/geocode flags it as unroutable. Karachi has sparse mapping at the
+    # edges (Bahria Town, DHA City), so this is a warning, not a rejection —
+    # the dispatcher may know something OSM does not.
+    GEOCODE_MAX_SNAP_M: float = 500.0
+
     # ── CORS ──────────────────────────────────────────────────────────────
     # Browser origins allowed to call this API, comma-separated in .env:
     #   CORS_ORIGINS=http://localhost:5173,https://demo.example.com

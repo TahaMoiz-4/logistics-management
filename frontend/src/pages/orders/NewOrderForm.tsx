@@ -5,7 +5,9 @@
  *   - customer_id + service_date are required.
  *   - the order MUST carry a location (lat/lng) — the backend does NOT inherit
  *     it from the customer, so we collect coordinates, prefilling from the
- *     customer's saved location when one exists.
+ *     customer's saved location when one exists. Coordinates normally come from
+ *     the address search (/v1/geocode/search); manual entry stays available for
+ *     the informal addresses OpenStreetMap does not have.
  *   - timewindow_start/end are full datetimes, so we combine the picked time
  *     with the service date into an ISO string before sending.
  */
@@ -13,6 +15,7 @@ import { useEffect, useMemo, useState, type CSSProperties, type FormEvent } from
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { SlideOver } from "@/components/Modal";
 import { Field, SelectInput, SkillChips, TextInput } from "@/components/form/Fields";
+import { AddressSearch, type SelectedAddress } from "@/components/address/AddressSearch";
 import { Spinner } from "@/components/Spinner";
 import { useToast } from "@/components/Toast";
 import { ordersApi } from "@/api/endpoints";
@@ -43,6 +46,8 @@ export function NewOrderForm({ open, onClose, defaultDate }: Props) {
   const [windowEnd, setWindowEnd] = useState("");
   const [duration, setDuration] = useState("30");
   const [skills, setSkills] = useState<string[]>([]);
+  const [address, setAddress] = useState<SelectedAddress | null>(null);
+  const [manualEntry, setManualEntry] = useState(false);
   const [lat, setLat] = useState("");
   const [lng, setLng] = useState("");
   const [notes, setNotes] = useState("");
@@ -59,13 +64,19 @@ export function NewOrderForm({ open, onClose, defaultDate }: Props) {
     [customers, resolvedCustomerId],
   );
 
-  // Prefill coordinates from the customer's saved location when they have one
-  // (and the user hasn't already typed their own).
+  // Prefill from the customer's saved location when they have one and the user
+  // hasn't already chosen/typed something else.
   useEffect(() => {
-    if (selectedCustomer?.lat != null && selectedCustomer?.lng != null) {
-      setLat((cur) => (cur ? cur : String(selectedCustomer.lat)));
-      setLng((cur) => (cur ? cur : String(selectedCustomer.lng)));
-    }
+    if (selectedCustomer?.lat == null || selectedCustomer?.lng == null) return;
+    setAddress((cur) =>
+      cur ??
+      {
+        lat: selectedCustomer.lat as number,
+        lng: selectedCustomer.lng as number,
+        address_text: selectedCustomer.address_text ?? selectedCustomer.name,
+      });
+    setLat((cur) => (cur ? cur : String(selectedCustomer.lat)));
+    setLng((cur) => (cur ? cur : String(selectedCustomer.lng)));
   }, [selectedCustomer]);
 
   const mutation = useMutation({
@@ -90,6 +101,8 @@ export function NewOrderForm({ open, onClose, defaultDate }: Props) {
     setWindowEnd("");
     setDuration("30");
     setSkills([]);
+    setAddress(null);
+    setManualEntry(false);
     setLat("");
     setLng("");
     setNotes("");
@@ -114,7 +127,7 @@ export function NewOrderForm({ open, onClose, defaultDate }: Props) {
     const latNum = lat.trim() === "" ? null : Number(lat);
     const lngNum = lng.trim() === "" ? null : Number(lng);
     if (latNum == null || lngNum == null || Number.isNaN(latNum) || Number.isNaN(lngNum)) {
-      setFormError("This order needs a location. Enter latitude and longitude.");
+      setFormError("This order needs a location. Search for an address, or enter coordinates.");
       return;
     }
     const body: OrderCreate = {
@@ -128,6 +141,7 @@ export function NewOrderForm({ open, onClose, defaultDate }: Props) {
       timewindow_end: windowEnd ? `${serviceDate}T${windowEnd}:00` : null,
       lat: latNum,
       lng: lngNum,
+      address_text: address?.address_text ?? null,
       notes: notes.trim() || null,
     };
     mutation.mutate(body);
@@ -204,32 +218,65 @@ export function NewOrderForm({ open, onClose, defaultDate }: Props) {
           <SkillChips options={skillOptions} value={skills} onChange={setSkills} />
         </Field>
 
-        <div style={row2}>
-          <Field label="Latitude" required>
-            <TextInput
-              type="number"
-              step="any"
-              inputMode="decimal"
-              placeholder="24.8607"
-              value={lat}
-              onChange={(e) => setLat(e.target.value)}
-            />
-          </Field>
-          <Field label="Longitude" required>
-            <TextInput
-              type="number"
-              step="any"
-              inputMode="decimal"
-              placeholder="67.0011"
-              value={lng}
-              onChange={(e) => setLng(e.target.value)}
-            />
-          </Field>
-        </div>
-        {selectedCustomer?.lat == null && (
+        <Field label="Visit address" required>
+          <AddressSearch
+            value={address}
+            onSelect={(picked) => {
+              setAddress(picked);
+              // Keep the manual fields in step so submit reads one source.
+              setLat(String(picked.lat));
+              setLng(String(picked.lng));
+              setManualEntry(false);
+            }}
+            onClear={() => {
+              setAddress(null);
+              setLat("");
+              setLng("");
+            }}
+          />
+        </Field>
+
+        {!address && (
+          <div>
+            <button
+              type="button"
+              onClick={() => setManualEntry((v) => !v)}
+              style={manualToggle}
+            >
+              {manualEntry ? "Hide coordinate entry" : "Can't find it? Enter coordinates instead"}
+            </button>
+
+            {manualEntry && (
+              <div style={{ ...row2, marginTop: 12 }}>
+                <Field label="Latitude" required>
+                  <TextInput
+                    type="number"
+                    step="any"
+                    inputMode="decimal"
+                    placeholder="24.8607"
+                    value={lat}
+                    onChange={(e) => setLat(e.target.value)}
+                  />
+                </Field>
+                <Field label="Longitude" required>
+                  <TextInput
+                    type="number"
+                    step="any"
+                    inputMode="decimal"
+                    placeholder="67.0011"
+                    value={lng}
+                    onChange={(e) => setLng(e.target.value)}
+                  />
+                </Field>
+              </div>
+            )}
+          </div>
+        )}
+
+        {selectedCustomer?.lat == null && !address && (
           <div style={locationNote}>
-            {selectedCustomer?.name ?? "This customer"} has no saved location — enter the visit
-            coordinates for this order.
+            {selectedCustomer?.name ?? "This customer"} has no saved location — search for the
+            visit address above.
           </div>
         )}
 
@@ -250,6 +297,17 @@ export function NewOrderForm({ open, onClose, defaultDate }: Props) {
 }
 
 const row2: CSSProperties = { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 };
+const manualToggle: CSSProperties = {
+  border: "none",
+  background: "none",
+  padding: 0,
+  fontSize: 14,
+  fontWeight: 600,
+  color: colors.textMuted,
+  cursor: "pointer",
+  textDecoration: "underline",
+  textUnderlineOffset: 3,
+};
 const locationNote: CSSProperties = {
   padding: "11px 14px",
   borderRadius: radius.md,

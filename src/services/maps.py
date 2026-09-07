@@ -4,13 +4,16 @@ src/services/maps.py
 OSMnx graph management service.
 
 Responsibilities:
-  1. Load the Karachi road network graph (from cache if available)
+  1. Load the road network graph for settings.MAP_PLACE (from cache if available)
   2. Cache the graph in Redis so it survives app restarts without re-downloading
   3. Apply traffic multipliers to edge travel times before routing
   4. Expose routing functions used by the optimizer
 
-Graph is loaded ONCE on startup and held in memory for the process lifetime.
-Redis cache means a fresh worker process doesn't need to hit OSM again.
+Graph is loaded ONCE, by the lifespan handler in src/main.py, and held in memory
+for the process lifetime. That load is best-effort: if it fails, the first solve
+loads it lazily instead (see alns/problem_data.py::_get_graph). Seed Redis with
+src.utils.scripts.seed_graph so startup is a fast unpickle rather than a
+multi-minute download from OSM.
 """
 
 import pickle
@@ -40,6 +43,8 @@ ox.settings.log_console      = False           # silence OSMnx's own logger
 GRAPH_CACHE_KEY = "karachi:road_graph:v1"
 # Bump the version suffix whenever you want to force a graph refresh
 # e.g. "karachi:road_graph:v2"
+# NOTE: this key does not encode settings.MAP_PLACE. If you change MAP_PLACE,
+# bump the version here too, or the old city's graph will be served from cache.
 
 # ---------------------------------------------------------------------------
 # Module-level graph singleton
@@ -117,10 +122,14 @@ def _save_to_redis(G: nx.MultiDiGraph) -> None:
 
 def _load_from_osmnx() -> nx.MultiDiGraph:
     """
-    Download (or load from OSMnx disk cache) the Karachi drive network.
-    Adds speed and travel_time attributes to every edge.
+    Download (or load from OSMnx disk cache) the drive network for
+    settings.MAP_PLACE. Adds speed and travel_time attributes to every edge.
+
+    The place name is shared with src/services/boundary.py, which resolves it to
+    the polygon the geocoder filters on — so the search box and the router
+    always describe the same city.
     """
-    G = ox.graph_from_place("Karachi, Pakistan", network_type="drive")
+    G = ox.graph_from_place(settings.MAP_PLACE, network_type="drive")
     G = ox.routing.add_edge_speeds(G)
     G = ox.routing.add_edge_travel_times(G)
     return G
@@ -203,6 +212,59 @@ def apply_traffic_to_graph(
 def get_nearest_node(G: nx.MultiDiGraph, lat: float, lng: float) -> int:
     """Snap a lat/lng coordinate to the nearest graph node."""
     return ox.nearest_nodes(G, X=lng, Y=lat)
+
+
+def peek_graph() -> Optional[nx.MultiDiGraph]:
+    """
+    The graph if it is ALREADY in this process's memory, else None.
+
+    Deliberately never loads: callers are latency-sensitive paths (the geocode
+    autocomplete) that would rather skip a check than block a keystroke on a
+    multi-minute OSM download.
+    """
+    return _graph
+
+
+# KD-tree over the graph's nodes, built once and reused.
+#
+# ox.nearest_nodes() rebuilds this tree on EVERY call, which costs ~0.28s
+# against Karachi's 178k nodes. The geocode endpoint checks a whole page of
+# results per keystroke, so that is ~2.2s of pure tree-building per search.
+# The graph is read-only after loading, so the tree can simply be cached.
+_node_tree = None
+_node_coords: Optional[list] = None
+
+
+def _get_node_tree(G: nx.MultiDiGraph):
+    """(cKDTree, node_ids) over the graph's nodes, built on first use."""
+    global _node_tree, _node_coords
+    if _node_tree is None:
+        import numpy as np
+        from scipy.spatial import cKDTree
+
+        node_ids = list(G.nodes)
+        coords = np.array([[G.nodes[n]["y"], G.nodes[n]["x"]] for n in node_ids])
+        _node_tree = cKDTree(coords)
+        _node_coords = (node_ids, coords)
+    return _node_tree, _node_coords
+
+
+def snap_distance_m(G: nx.MultiDiGraph, lat: float, lng: float) -> float:
+    """
+    Metres from (lat, lng) to the nearest drivable node in the graph.
+
+    A large value means the matrix builder will snap this location to a road far
+    away — or fail to route it at all, which surfaces as PENALTY_SEC for every
+    pair and an order the solver silently leaves unserved. Checking here turns
+    that into a warning at data-entry time.
+
+    The KD-tree query is in degrees (fine for ranking nearby candidates); the
+    winner is then measured properly with a great-circle distance in metres.
+    """
+    tree, (node_ids, coords) = _get_node_tree(G)
+    _, idx = tree.query([lat, lng], k=1)
+    nlat, nlng = coords[idx]
+    return float(ox.distance.great_circle(lat, lng, nlat, nlng))
 
 
 def shortest_path_by_time(

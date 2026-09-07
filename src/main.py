@@ -11,6 +11,7 @@ ALNS solve, watch it live over SSE, and read the results + solver diagnostics.
 """
 
 import logging
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -31,14 +32,52 @@ from src.api.v1.mobile import router as mobile_router
 from src.api.v1.tracking import router as tracking_router
 from src.api.v1.dashboard import router as dashboard_router
 from src.api.v1.meta import router as meta_router
+from src.api.v1.geocode import router as geocode_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Warm the caches the routing and geocoding paths depend on.
+
+    Both loads are BEST EFFORT — a failure logs and the app still serves. That
+    matters: the graph can take 2-5 minutes to download on a cold machine, and
+    letting that block startup would fail health checks and stall deploys.
+
+      * Road graph — previously loaded lazily on the first solve, which meant a
+        cold deploy silently charged a multi-minute download to whichever
+        dispatcher happened to solve first. Loading it here makes that cost
+        visible at boot, and lets /v1/geocode flag unroutable addresses.
+        Seed Redis first so this is a fast unpickle:
+            docker compose exec backend python -m src.utils.scripts.seed_graph
+      * Service-area boundary — the polygon /v1/geocode filters on. Cheap, and
+        pre-fetching keeps Nominatim off the first search request.
+    """
+    from src.services import boundary
+    from src.services.maps import load_graph
+
+    try:
+        boundary.load_boundary()
+        logger.info("Startup: service-area boundary ready (%s)", settings.MAP_PLACE)
+    except Exception as e:
+        logger.warning(f"Startup: boundary unavailable ({e}); geocode runs unfiltered")
+
+    try:
+        G = load_graph()
+        logger.info(f"Startup: road graph ready ({G.number_of_nodes():,} nodes)")
+    except Exception as e:
+        logger.warning(f"Startup: road graph unavailable ({e}); it will load on first solve")
+
+    yield
+
 
 app = FastAPI(
     title="Logistics Management — ALNS Routing",
     description="Nurse/technician field-service DARP routing engine.",
     version="0.1.0",
+    lifespan=lifespan,
 )
 
 # ── CORS ─────────────────────────────────────────────────────────────────────
@@ -77,6 +116,7 @@ app.include_router(mobile_router)
 app.include_router(tracking_router)
 app.include_router(dashboard_router)
 app.include_router(meta_router)
+app.include_router(geocode_router)
 
 
 @app.get("/health", tags=["health"])
