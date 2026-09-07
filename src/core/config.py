@@ -52,6 +52,16 @@ class Settings(BaseSettings):
     # the dispatcher may know something OSM does not.
     GEOCODE_MAX_SNAP_M: float = 500.0
 
+    # ── Demo tooling ──────────────────────────────────────────────────────
+    # Exposes POST /v1/settings/demo-data/reseed, which WIPES all tenant data
+    # (both demo companies) and reseeds it dated from today. It exists so a
+    # salesperson can refresh a stale demo box from the console instead of
+    # SSHing in — seeded orders are relative to the seed date, and the
+    # route-plan picker only lists orders from today onward.
+    #
+    # Leave FALSE anywhere holding real data. Set it in .env on the demo VM.
+    DEMO_TOOLS_ENABLED: bool = False
+
     # ── CORS ──────────────────────────────────────────────────────────────
     # Browser origins allowed to call this API, comma-separated in .env:
     #   CORS_ORIGINS=http://localhost:5173,https://demo.example.com

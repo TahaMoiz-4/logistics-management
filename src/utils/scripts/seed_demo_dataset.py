@@ -89,6 +89,26 @@ MALE_NAMES = [
     "Asif Jamil", "Nabeel Anwar", "Owais Khan", "Tariq Mehmood", "Junaid Akram",
 ]
 
+# Customer names. Kept separate from the staff pools above so a patient and a
+# nurse never share a name in the demo.
+#
+# The two companies need different KINDS of name: company 1's customers are
+# patients (people), company 2's are business premises (sites).
+PATIENT_NAMES = [
+    "Amina Rashid", "Ghulam Abbas", "Shazia Parveen", "Iqbal Hussain",
+    "Naseem Akhtar", "Abdul Sattar", "Yasmin Bibi", "Mohammad Younus",
+    "Farhat Jabeen", "Rizwan Ahmed", "Shabana Kausar", "Ashraf Ali",
+    "Rukhsana Begum", "Nadeem Siddiqui", "Talat Mahmood", "Parveen Akhtar",
+]
+SITE_NAMES = [
+    "Ittehad Textiles", "Karachi Steel Works", "Meezan Trading Co.",
+    "Pak Suzuki Dealership", "Habib Cash & Carry", "Indus Pharma",
+    "Sindh Cotton Mills", "Al-Karam Packaging", "Descon Engineering",
+    "Gul Ahmed Retail", "National Foods Depot", "Shaheen Logistics",
+    "Unique Plastics", "Bahria Medical Centre", "Orient Electronics",
+    "Sapphire Fibres",
+]
+
 VEHICLE_MODELS = [
     ("Toyota Hiace", VehicleType.van, "White", 2694, FuelType.petrol, 8.0, 12),
     ("Suzuki APV",   VehicleType.van, "Silver", 1493, FuelType.petrol, 11.0, 7),
@@ -242,13 +262,20 @@ def _seed_company(db, cid, name, service_type, admin_username):
     print(f"  3 vehicles + 3 drivers (Sindh plates)")
 
     # 4) Customers (8) at spread-out KHI areas.
+    #
+    # Named as real people (nurse co: patients) or businesses (tech co: sites)
+    # rather than "Patient - Clifton Block 2" — the area is already visible on
+    # the map and in address_text, so putting it in the name told you nothing
+    # and made the demo look like placeholder data.
     areas = random.sample(KHI_AREAS, k=8)
+    name_pool = (PATIENT_NAMES if is_nurse else SITE_NAMES).copy()
+    random.shuffle(name_pool)
     customers = []
     for idx, (lat, lng, area, road) in enumerate(areas):
         cust_loc = _mk_location(db, lat, lng, f"{road}, {area}, Karachi",
                                 LocationTypes.customer_location)
         cust = Customer(
-            name=f"{'Patient' if is_nurse else 'Site'} - {area}",
+            name=name_pool[idx],
             company_id=cid, location_id=cust_loc.id,
             contact_phone=_mobile(),
             contact_email=f"contact{idx}@{name.split()[0].lower()}-cust.pk",

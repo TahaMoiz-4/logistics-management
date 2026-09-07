@@ -77,6 +77,20 @@ export interface Customer {
   order_count: number;
 }
 
+// ---------- settings / demo tooling ----------
+export interface DemoDataStatus {
+  /** DEMO_TOOLS_ENABLED on this deployment. */
+  enabled: boolean;
+  is_admin: boolean;
+}
+
+export interface ReseedDemoDataResponse {
+  removed_rows: number;
+  orders: number;
+  customers: number;
+  employees: number;
+}
+
 // ---------- geocoding ----------
 /** One suggestion from /v1/geocode/search. See src/services/photon.py. */
 export interface GeocodeResult {

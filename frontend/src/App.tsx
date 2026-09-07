@@ -16,6 +16,7 @@ import { PlanDetailPage } from "@/pages/plans/PlanDetailPage";
 import { TrackingPage } from "@/pages/tracking/TrackingPage";
 import { FleetPage } from "@/pages/fleet/FleetPage";
 import { WorkersPage } from "@/pages/workers/WorkersPage";
+import { SettingsPage } from "@/pages/settings/SettingsPage";
 
 export function App() {
   return (
@@ -38,6 +39,7 @@ export function App() {
         <Route path="tracking" element={<TrackingPage />} />
         <Route path="fleet" element={<FleetPage />} />
         <Route path="workers" element={<WorkersPage />} />
+        <Route path="settings" element={<SettingsPage />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

@@ -33,6 +33,7 @@ from src.api.v1.tracking import router as tracking_router
 from src.api.v1.dashboard import router as dashboard_router
 from src.api.v1.meta import router as meta_router
 from src.api.v1.geocode import router as geocode_router
+from src.api.v1.settings import router as settings_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -117,6 +118,7 @@ app.include_router(tracking_router)
 app.include_router(dashboard_router)
 app.include_router(meta_router)
 app.include_router(geocode_router)
+app.include_router(settings_router)
 
 
 @app.get("/health", tags=["health"])

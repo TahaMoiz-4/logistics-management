@@ -22,6 +22,7 @@ const NAV: NavDef[] = [
   { to: "/tracking", label: "Live Tracking", icon: "tracking" },
   { to: "/fleet", label: "Fleet", icon: "fleet" },
   { to: "/workers", label: "Workers", icon: "workers" },
+  { to: "/settings", label: "Settings", icon: "settings" },
 ];
 
 export function Sidebar() {

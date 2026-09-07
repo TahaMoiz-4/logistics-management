@@ -9,6 +9,7 @@ import type {
   CreateRoutePlanRequest,
   CreateRoutePlanResponse,
   Customer,
+  DemoDataStatus,
   DashboardToday,
   Depot,
   DiagnosticsOut,
@@ -23,6 +24,7 @@ import type {
   Order,
   OrderCreate,
   OrderUpdate,
+  ReseedDemoDataResponse,
   RoutePlanSummary,
   ServableOrder,
   SysUser,
@@ -45,6 +47,16 @@ export const dashboardApi = {
 
 export const metaApi = {
   enums: () => request<MetaEnums>("/v1/meta/enums"),
+};
+
+export const settingsApi = {
+  demoDataStatus: () => request<DemoDataStatus>("/v1/settings/demo-data"),
+  /** Destructive: wipes all tenant data and reseeds it dated from today. */
+  reseedDemoData: () =>
+    request<ReseedDemoDataResponse>("/v1/settings/demo-data/reseed", {
+      method: "POST",
+      body: { confirm: true },
+    }),
 };
 
 export const geocodeApi = {
